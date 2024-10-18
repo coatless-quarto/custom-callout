@@ -1,6 +1,6 @@
 ---
 title: "My Document"
-format: html
+format: native
 
 custom-callout:
   note:
@@ -19,4 +19,8 @@ filters:
 
 ::: todo
 Hello there!
+:::
+
+::: {.callout-note}
+Hello!
 :::
