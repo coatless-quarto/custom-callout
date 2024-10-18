@@ -1,25 +1,40 @@
-# Quarto Extension Development with Lua in a Devcontainer
+# Customcallout Extension For Quarto
 
-This repository houses a devcontainer that setups a [Quarto extension development environment](https://quarto.org/docs/extensions/lua.html). The container is setup to work with [GitHub Codespaces](https://github.com/features/codespaces) to instantly have a cloud-based developer workflow.
+> [!IMPORTANT]
+>
+> This extension is under development and is not yet ready for use.
 
-You can try out the Codespace by clicking on the following button:
+The `customcallout` extension provides a YAML interface to configure a Quarto Callout Block with custom values.
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/coatless-devcontainer/quarto-extension-dev?quickstart=1)
+## Installing
 
-**Note:** Codespaces are available to Students and Teachers for free [up to 180 core hours per month](https://docs.github.com/en/education/manage-coursework-with-github-classroom/integrate-github-classroom-with-an-ide/using-github-codespaces-with-github-classroom#about-github-codespaces) through [GitHub Education](https://education.github.com/). Otherwise, you will have [up to 60 core hours and 15 GB free per month](https://github.com/features/codespaces#pricing).
+```bash
+quarto add coatless-quarto/customcallout
+```
 
-The devcontainer contains:
+This will install the extension under the `_extensions` subdirectory.
+If you're using version control, you will want to check in this directory.
 
-- The latest [pre-release](https://quarto.org/docs/download/prerelease) version of Quarto.
-- [Quarto VS Code Extension](https://marketplace.visualstudio.com/items?itemName=quarto.quarto).
-- [Lua LSP VS Code Extension](https://marketplace.visualstudio.com/items?itemName=sumneko.lua) for Lua code intelligence.
-- [GitHub copilot VS Code Extension](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot).
-- `R` and `Python`
-- `knitr` and `jupyter`
+## Using
 
-## References
+To use the extension, add the following to your document's YAML front matter:
 
-- [Quarto: Lua API Reference](https://quarto.org/docs/extensions/lua-api.html)
-- [Quarto: Lua Development](https://quarto.org/docs/extensions/lua.html)
-- [Pandoc: Lua Filters](https://pandoc.org/lua-filters.html)
-- [Lua: Manual](https://www.lua.org/manual/5.4/)
+```yaml
+custom-callout:
+    todo: 
+        title: "TODO"
+    jjb:
+        title: "JJB"
+```
+
+This will create two custom callouts: `todo` and `jjb`. The `title` field is required and will be displayed in the callout block.
+
+> [!NOTE]
+>
+> We're currently working on supporting additional fields for the callout block like color, icon, and more.
+
+
+## Example
+
+Here is the source code for a minimal example: [example.qmd](example.qmd).
+

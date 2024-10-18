@@ -1,0 +1,22 @@
+---
+title: "My Document"
+format: html
+
+custom-callout:
+  note:
+    icon: "📝"
+    color: "blue"
+  warning:
+    icon: "⚠️"
+    color: "orange"
+    
+  todo:
+    icon: "⚠️"
+    color: "pink"
+filters:
+  - customcallout
+---
+
+::: todo
+Hello there!
+:::
