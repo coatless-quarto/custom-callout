@@ -1,24 +1,25 @@
 ---
 title: "My Document"
-format: native
+format: html
 
-custom-callout:
-  note:
-    icon: "📝"
-    color: "blue"
-  warning:
-    icon: "⚠️"
-    color: "orange"
-    
+custom-callout:    
   todo:
-    icon: "⚠️"
+    icon-symbol: "⚠️"
     color: "pink"
+  jjb:
+    title: "fix for JJB"
+    icon-symbol: "⚠️"
+    color: "#FFA500"
 filters:
   - customcallout
 ---
 
 ::: todo
 Hello there!
+:::
+
+::: jjb
+Please address this issue ... 
 :::
 
 ::: {.callout-note}
