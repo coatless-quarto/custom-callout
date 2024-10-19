@@ -49,3 +49,7 @@ There has been a lot of work done on the `callout` block in Quarto. Here are som
 - Official
    - [Quarto: Callout Lua API Reference](https://quarto.org/docs/prerelease/1.3/custom-ast-nodes/callout.html)
    - [Quarto: Callout Blocks](https://quarto.org/docs/authoring/callouts.html)
+
+- Source Code
+    - SCSS: <https://github.com/quarto-dev/quarto-cli/blob/71945532e1fc1a5cf113117f6d5ff5bee3991797/src/resources/formats/html/bootstrap/_bootstrap-rules.scss#L1520-L1620>
+    - LaTeX: <https://github.com/quarto-dev/quarto-cli/blob/71945532e1fc1a5cf113117f6d5ff5bee3991797/src/resources/filters/quarto-pre/meta.lua#L11>
