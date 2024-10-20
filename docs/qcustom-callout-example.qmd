@@ -51,6 +51,10 @@ filters:
 
 ## Sample Custom Callouts
 
+The following examples demonstrate the use of custom callouts in Quarto documents using the defined styles in the YAML front matter.
+
+### Original
+
 :::{.panel-tabset}
 
 ### Rendered
@@ -82,6 +86,26 @@ Let's do a feature test!
 :::
 ````
 :::
+
+### Title
+
+:::{.panel-tabset}
+
+### Rendered
+
+::: {.todo title="Todo with a Custom Title!"}
+Demo of `title="Todo with a Custom Title!"`.
+:::
+
+### Source
+
+````md
+::: {.todo title="Todo with a Custom Title!"}
+Demo of `title="Todo with a Custom Title!"`.
+:::
+````
+:::
+
 
 ### Icon
 
@@ -148,9 +172,9 @@ Demo of `appearance="minimal"`.
 ````
 :::
 
-## Official Quarto Callout
+## Original Quarto Callout
 
-This section provides examples of the official Quarto callout. 
+This section provides examples of the built-in [Quarto Callout](https://quarto.org/docs/authoring/callouts.html) for a Note, e.g. `.callout-note`. 
 
 
 :::{.panel-tabset}
