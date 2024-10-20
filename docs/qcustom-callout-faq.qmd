@@ -130,16 +130,30 @@ The custom-callout extension is primarily designed for HTML output. While it may
 the full range of customization options (especially custom icons and colors) might not be available in non-HTML outputs.
 
 
-## How does the custom-callout extension compare to the quarto-custom-numbered-blocks extension?
+## How does the quarto-custom-callout extension compare to the quarto-custom-numbered-blocks extension?
 
-The [quarto-custom-numbered-blocks](https://github.com/ute/custom-numbered-blocks) extension by [Ute Hahn](https://github.com/ute) is a complementary tool that offers different functionality:
+The [quarto-custom-numbered-blocks](https://github.com/ute/custom-numbered-blocks) extension by [Ute Hahn](https://github.com/ute) is a complementary tool that offers different functionality. It creates numbered blocks (e.g., theorems, examples) with automatic numbering and cross-referencing. Other features include: 
 
-- It creates numbered blocks (e.g., theorems, examples) with automatic numbering and cross-referencing.
-- Features include: 
-  - Automatic numbering and cross-referencing
-  - Grouping of block types with shared styling and numbering
-  - Generation of lists of specific block types
-  - Support for both PDF and HTML output
-- This makes it great for academic or technical documents requiring numbered theorems, examples, or exercises.
+- Grouping of block types with shared styling and numbering
+- Generation of lists of specific block types
+- Support for both PDF and HTML output
 
-Both extensions can be used in the same document if needed, but be mindful of potential styling conflicts and filter ordering.
+This makes it great for academic or technical documents requiring numbered theorems, examples, or exercises. Both extensions can be used in the same document if needed, but be mindful of potential styling conflicts and filter ordering.
+
+One notable difference is that the `quarto-custom-callout` extension is built ontop of Quarto's built-in callout functionality, while `quarto-custom-numbered-blocks` creates its own block type.
+
+## Where can I find more information about custom callouts?
+
+For more information about custom callouts, you can refer to the following resources:
+
+- Discussion/Issue Tickets:
+   - [Custom filter for processing Github/Obsidian style callouts stopped working - any tips? ](https://github.com/quarto-dev/quarto-cli/discussions/6550)
+   - [Creating new callout types (and sharing as an extension)?](https://github.com/quarto-dev/quarto-cli/discussions/7753)
+   - [Custom callout boxes](https://github.com/quarto-dev/quarto-cli/issues/844)   
+- Quarto Documentation
+   - [Quarto: Callout Lua API Reference](https://quarto.org/docs/prerelease/1.3/custom-ast-nodes/callout.html)
+   - [Quarto: Callout Blocks](https://quarto.org/docs/authoring/callouts.html)
+- Quarto Source Code
+    - SCSS: <https://github.com/quarto-dev/quarto-cli/blob/71945532e1fc1a5cf113117f6d5ff5bee3991797/src/resources/formats/html/bootstrap/_bootstrap-rules.scss#L1520-L1620>
+    - LaTeX: <https://github.com/quarto-dev/quarto-cli/blob/71945532e1fc1a5cf113117f6d5ff5bee3991797/src/resources/filters/quarto-pre/meta.lua#L11>
+

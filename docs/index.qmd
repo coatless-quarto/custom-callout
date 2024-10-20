@@ -42,11 +42,11 @@ Here's a quick overview of the available YAML options:
 | Option | Description | Example |
 |--------|-------------|---------|
 | `title` | Default title for the callout (optional) | `title: "Important Note"` |
-| `icon` | Use a default icon (optional) | `icon: true` |
+| `icon` | Use a default icon (optional) | `icon: "true"` |
 | `icon-symbol` | Custom symbol or text for the icon | `icon-symbol: "📝"` |
 | `color` | Color for the callout's left border and icon | `color: "#FFA500"` |
-| `appearance` | Callout appearance (optional) | `appearance: simple` |
-| `collapse` | Make the callout collapsible (optional) | `collapse: true` |
+| `appearance` | Callout appearance (optional) | `appearance: "simple"` |
+| `collapse` | Make the callout collapsible (optional) | `collapse: "true"` |
 
 You can start using custom callouts in your Quarto project immediately after installation. First, define your custom callouts in the YAML front matter:
 
@@ -64,7 +64,7 @@ filters:
 ```
 
 
-Then, use the custom callouts in your Markdown content:
+Then, use the custom callouts in your Quarto documents like this:
 
 ```markdown
 ::: todo
@@ -74,6 +74,11 @@ Remember to complete this section.
 ::: test
 This information is crucial for understanding the concept.
 :::
+
+
+::: {.todo title="Collapsed Custom Todo (Click to Expand)" collapse="true"}
+This is a custom 'todo' callout that is collapsible and has a custom title.
+:::
 ```
 
 ## Examples
@@ -82,6 +87,18 @@ Here are some examples of custom callouts in action:
 
 ::: {.todo}
 This is a custom 'todo' callout with a pink border and a pencil icon.
+:::
+
+::: {.todo title="Collapsed Custom Todo (Click to Expand)" collapse="true"}
+This is a custom 'todo' callout that is collapsible and has a custom title.
+:::
+
+::: {.todo title="Simple Appearance Custom Todo" appearance="simple"}
+This is a custom 'todo' callout that uses a **simple** appearance with a custom title.
+:::
+
+::: {.todo title="Simple Appearance Custom Todo" appearance="minimal"}
+This is a custom 'todo' callout that uses a **minimal** appearance with a custom title.
 :::
 
 ::: {.test}
