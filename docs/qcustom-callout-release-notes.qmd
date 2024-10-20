@@ -1,0 +1,16 @@
+---
+title: "Release Notes"
+date: "10-18-2024"
+date-modified: last-modified
+engine: markdown
+format: 
+  html:
+    toc: true
+---
+
+# 0.0.0-dev.1:  ???? (??-??-????)
+
+## Features
+
+- `custom-callout` enables the creation of custom callouts. 
+

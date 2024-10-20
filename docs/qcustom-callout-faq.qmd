@@ -1,0 +1,145 @@
+---
+title: Custom Callout Extension FAQ
+custom-callout:
+  todo:
+    icon-symbol: "📝"
+    color: "pink"
+  jjb:
+    title: "fix for JJB"
+    icon-symbol: "⚠️"
+    color: "#FFA500"
+filters:
+    - custom-callout
+---
+
+## What is the custom-callout extension?
+
+The custom-callout extension is a Quarto filter that allows you to create and use custom callouts in your Quarto documents.
+It extends the built-in callout functionality, enabling you to define your own callout types with custom colors, icons, and appearances.
+
+:::{.callout-important}
+The custom-callout extension only works with Quarto HTML documents currently. We're looking into expanding support for other output formats in the future.
+:::
+
+## How do I install the custom-callout extension?
+
+To use the custom-callout extension, you need to:
+
+1. Download and install the Quarto extension from GitHub by running the following command in your Termainal:
+
+```bash
+quarto add coatless-quarto/custom-callout
+```
+
+2. Add `custom-callout` to the `filters` list in your YAML front matter or `_quarto.yml` file.
+
+3. Define your custom callouts in the YAML front matter of your Quarto document or in your `_quarto.yml` file.
+
+
+
+## How do I define custom callouts?
+
+Define custom callouts in the YAML front matter of your Quarto document or in your `_quarto.yml` file using the `custom-callout` key. For example:
+
+```yaml
+custom-callout:
+  todo:
+    icon-symbol: "📝"
+    color: "pink"
+  bug:
+    title: "Bug Report"
+    icon: false
+    color: "#FFA500"
+
+filters:
+- custom-callout
+```
+
+
+## What options can I set for each custom callout?
+
+For each custom callout, you can set the following options:
+
+- `title`: The default title for the callout (optional)
+- `icon`: Set to `true` to use a default icon, or omit for no icon
+- `icon-symbol`: A custom symbol or text to use as the icon
+- `color`: The color for the callout's left border and icon (can be a named color or hex code)
+- `appearance`: The callout appearance (optional)
+- `collapse`: Whether the callout should be collapsible (optional)
+
+## How do I use a custom callout in my document?
+
+Use custom callouts in your Markdown content with the following syntax:
+
+```markdown
+::: todo
+This is a todo item.
+:::
+
+::: bug
+Please fix this issue.
+:::
+```
+
+::: todo
+This is a todo item.
+:::
+
+::: bug
+Please fix this issue.
+:::
+
+## Can I override a property for a specific callout instance?
+
+Yes, you can override various properties title for a specific callout instance by adding them as attributes to the callout block. 
+
+For example, to set a custom title for a todo item, you can use the `title` attribute:
+
+```markdown
+::: {.todo title="Urgent Task"}
+This needs to be done ASAP.
+:::
+```
+
+::: {.todo title="Urgent Task"}
+This needs to be done ASAP.
+:::
+
+## Do custom callouts support collapsible content?
+
+Yes, custom callouts support collapsible content. You can set the `collapse` option to `true` in your callout definition to make it collapsible.
+
+## Can I use custom callouts alongside built-in Quarto callouts?
+
+Yes, you can use custom callouts alongside Quarto's built-in callouts. The custom-callout extension doesn't interfere with the standard callout syntax.
+
+## How are custom callout styles applied?
+
+The extension automatically generates CSS for your custom callouts based on the defined colors and icons. 
+This CSS is included in the document's header, ensuring that your custom callouts are styled correctly.
+
+## What if I want to change the appearance of all my custom callouts?
+
+You can modify the `generateCustomCSS` function in the `custom-callout.lua` file to change the default styling for all custom callouts.
+However, be careful when making changes to the Lua script, as it may affect the functionality of the extension.
+Alternatively, you can add custom CSS to your document to override the default styles.
+
+## Is this extension compatible with all Quarto output formats?
+
+The custom-callout extension is primarily designed for HTML output. While it may work with other formats to some extent, 
+the full range of customization options (especially custom icons and colors) might not be available in non-HTML outputs.
+
+
+## How does the custom-callout extension compare to the quarto-custom-numbered-blocks extension?
+
+The [quarto-custom-numbered-blocks](https://github.com/ute/custom-numbered-blocks) extension by [Ute Hahn](https://github.com/ute) is a complementary tool that offers different functionality:
+
+- It creates numbered blocks (e.g., theorems, examples) with automatic numbering and cross-referencing.
+- Features include: 
+  - Automatic numbering and cross-referencing
+  - Grouping of block types with shared styling and numbering
+  - Generation of lists of specific block types
+  - Support for both PDF and HTML output
+- This makes it great for academic or technical documents requiring numbered theorems, examples, or exercises.
+
+Both extensions can be used in the same document if needed, but be mindful of potential styling conflicts and filter ordering.

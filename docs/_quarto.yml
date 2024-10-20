@@ -1,0 +1,30 @@
+project:
+  type: website
+
+website:
+  title: "custom-callout"
+  reader-mode: true
+  repo-url: https://github.com/coatless-quarto/custom-callout/
+  repo-actions: [edit, issue]
+  sidebar:
+    style: "floating"
+    search: true
+    tools:
+      - icon: github
+        href: https://github.com/coatless-quarto/custom-callout/
+    contents: 
+      - text: "Home"
+        file: index.qmd
+      - section: "Support"
+        contents:
+        - text: "FAQ"
+          href: qcustom-callout-faq.qmd
+        - text: "Submit an issue"
+          href: https://github.com/coatless-quarto/custom-callout/issues/new/choose
+      - section: "Extra"
+        contents:
+        - qcustom-callout-release-notes.qmd
+
+format: 
+  html:
+    toc: true
