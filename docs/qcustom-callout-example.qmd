@@ -1,5 +1,5 @@
 ---
-title: "My Document"
+title: "Custom Callout Examples"
 format:
   html:
     css: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css
@@ -21,11 +21,39 @@ filters:
   - custom-callout
 ---
 
-## Custom Callouts
+This document provides examples of custom callouts.
 
-This section provides examples of custom callouts.
+## Document YAML
 
-### Sample Custom Callouts
+The following YAML front matter is used to define custom callouts in this document:
+
+````md
+---
+title: "Custom Callout Examples"
+format: html
+custom-callout:    
+  todo:
+    icon-symbol: "📝"
+    color: "pink"
+  jjb:
+    icon: true
+    title: "fix for JJB"
+    icon-symbol: "⚠️"
+    color: "#FFA500"
+  test:
+    title: "Test feature"
+    icon: true
+    color: "#801410"
+filters:
+  - custom-callout
+---
+````
+
+## Sample Custom Callouts
+
+:::{.panel-tabset}
+
+### Rendered
 
 ::: todo
 Hello there!
@@ -39,21 +67,66 @@ Please address this issue ...
 Let's do a feature test!
 :::
 
+### Source
+````md
+::: todo
+Hello there!
+:::
+
+::: jjb
+Please address this issue ... 
+:::
+
+::: test
+Let's do a feature test!
+:::
+````
+:::
 
 ### Icon
+
+:::{.panel-tabset}
+
+### Rendered
 
 ::: {.todo icon="false" title="Todo with No Icon"}
 Demo of `icon="false"`.
 :::
 
+### Source
+
+````md
+::: {.todo icon="false" title="Todo with No Icon"}
+Demo of `icon="false"`.
+:::
+````
+:::
+
 ### Collapse
 
+
+:::{.panel-tabset}
+
+### Rendered
 ::: {.todo collapse="true" title="Collapsed Todo with Title"}
 Demo of `collapse="true"`.
 :::
 
+### Source
+
+````md
+::: {.todo collapse="true" title="Collapsed Todo with Title"}
+Demo of `collapse="true"`.
+:::
+````
+
+:::
+
 ### Appearance
 
+:::{.panel-tabset}
+
+### Rendered
 ::: {.todo appearance="simple" title="Todo with Simple Appearance"}
 Demo of `appearance="simple"`.
 :::
@@ -62,11 +135,27 @@ Demo of `appearance="simple"`.
 Demo of `appearance="minimal"`.
 :::
 
+### Source
+
+````md
+::: {.todo appearance="simple" title="Todo with Simple Appearance"}
+Demo of `appearance="simple"`.
+:::
+
+::: {.todo appearance="minimal" title="Todo with Minimal Appearance"}
+Demo of `appearance="minimal"`.
+:::
+````
+:::
 
 ## Official Quarto Callout
 
 This section provides examples of the official Quarto callout. 
 
+
+:::{.panel-tabset}
+
+### Rendered
 ::: {.callout-note}
 Hello!
 :::
@@ -83,3 +172,23 @@ Demo of `appearance="simple"`.
 Demo of `appearance="minimal"`.
 :::
 
+### Source
+
+````md
+::: {.callout-note}
+Hello!
+:::
+
+::: {.callout-note collapse="true" title="Collapsed Note with Title"}
+Demo of `collapse="true"`
+:::
+
+::: {.callout-note appearance="simple" title="Simple Note Appearance with Title"}
+Demo of `appearance="simple"`.
+:::
+
+::: {.callout-note appearance="minimal" title="Minimal Note Appearance with Title"}
+Demo of `appearance="minimal"`.
+:::
+````
+:::
