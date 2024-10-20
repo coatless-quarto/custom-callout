@@ -1,0 +1,85 @@
+---
+title: "My Document"
+format:
+  html:
+    css: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css
+
+custom-callout:    
+  todo:
+    icon-symbol: "📝"
+    color: "pink"
+  jjb:
+    icon: true
+    title: "fix for JJB"
+    icon-symbol: "⚠️"
+    color: "#FFA500"
+  test:
+    title: "Test feature"
+    icon: true
+    color: "#801410"
+filters:
+  - custom-callout
+---
+
+## Custom Callouts
+
+This section provides examples of custom callouts.
+
+### Sample Custom Callouts
+
+::: todo
+Hello there!
+:::
+
+::: jjb
+Please address this issue ... 
+:::
+
+::: test
+Let's do a feature test!
+:::
+
+
+### Icon
+
+::: {.todo icon="false" title="Todo with No Icon"}
+Demo of `icon="false"`.
+:::
+
+### Collapse
+
+::: {.todo collapse="true" title="Collapsed Todo with Title"}
+Demo of `collapse="true"`.
+:::
+
+### Appearance
+
+::: {.todo appearance="simple" title="Todo with Simple Appearance"}
+Demo of `appearance="simple"`.
+:::
+
+::: {.todo appearance="minimal" title="Todo with Minimal Appearance"}
+Demo of `appearance="minimal"`.
+:::
+
+
+## Official Quarto Callout
+
+This section provides examples of the official Quarto callout. 
+
+::: {.callout-note}
+Hello!
+:::
+
+::: {.callout-note collapse="true" title="Collapsed Note with Title"}
+Demo of `collapse="true"`
+:::
+
+::: {.callout-note appearance="simple" title="Simple Note Appearance with Title"}
+Demo of `appearance="simple"`.
+:::
+
+::: {.callout-note appearance="minimal" title="Minimal Note Appearance with Title"}
+Demo of `appearance="minimal"`.
+:::
+

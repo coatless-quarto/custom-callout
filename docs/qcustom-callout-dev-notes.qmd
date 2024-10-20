@@ -1,0 +1,19 @@
+---
+title: Custom Callout Development Notes
+---
+
+
+For more information about callouts, custom callouts, and Quarto you can refer to the following resources:
+
+- Discussion/Issue Tickets:
+   - [Custom filter for processing Github/Obsidian style callouts stopped working - any tips? ](https://github.com/quarto-dev/quarto-cli/discussions/6550)
+   - [Creating new callout types (and sharing as an extension)?](https://github.com/quarto-dev/quarto-cli/discussions/7753)
+   - [Custom callout boxes](https://github.com/quarto-dev/quarto-cli/issues/844)   
+- Quarto Documentation
+   - [Quarto: Callout Lua API Reference](https://quarto.org/docs/prerelease/1.3/custom-ast-nodes/callout.html)
+   - [Quarto: Callout Blocks](https://quarto.org/docs/authoring/callouts.html)
+- Quarto Source Code
+    - SCSS: <https://github.com/quarto-dev/quarto-cli/blob/71945532e1fc1a5cf113117f6d5ff5bee3991797/src/resources/formats/html/bootstrap/_bootstrap-rules.scss#L1520-L1620>
+    - LaTeX: <https://github.com/quarto-dev/quarto-cli/blob/71945532e1fc1a5cf113117f6d5ff5bee3991797/src/resources/filters/quarto-pre/meta.lua#L11>
+- Community Extensions
+    - [Custom Numbered Blocks](https://github.com/ute/custom-numbered-blocks) by [Ute Hahn](https://github.com/ute)
