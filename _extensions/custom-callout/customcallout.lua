@@ -97,7 +97,7 @@ local function convertToCustomCallout(div)
         type = callout.type,
         content = div.content,
         title = div.attributes.title or callout.title,
-        icon = callout.icon,
+        icon = div.attributes.icon or callout.icon,
         appearance = div.attributes.appearance or callout.appearance,
         collapse = div.attributes.collapse or callout.collapse
       }
