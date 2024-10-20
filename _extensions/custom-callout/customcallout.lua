@@ -98,8 +98,8 @@ local function convertToCustomCallout(div)
         content = div.content,
         title = div.attributes.title or callout.title,
         icon = callout.icon,
-        appearance = callout.appearance,
-        collapse = callout.collapse
+        appearance = div.attributes.appearance or callout.appearance,
+        collapse = div.attributes.collapse or callout.collapse
       }
       
       return quarto.Callout(calloutParams)
