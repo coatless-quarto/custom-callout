@@ -7,6 +7,8 @@ website:
   repo-url: https://github.com/coatless-quarto/custom-callout/
   repo-actions: [edit, issue]
   sidebar:
+    logo: "https://github.com/user-attachments/assets/7edadf64-a304-436c-b54f-2f76def14c14"
+    logo-alt: "A hexagon logo for the custom-callout extension."
     style: "floating"
     search: true
     tools:
