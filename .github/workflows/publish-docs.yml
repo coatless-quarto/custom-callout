@@ -12,10 +12,13 @@ jobs:
         runs-on: ubuntu-latest
         # Only restrict concurrency for non-PR jobs
         concurrency:
-          group: quarto-publish-${{ github.event_name != 'pull_request' || github.run_id }}
+            group: quarto-publish-${{ github.event_name != 'pull_request' || github.run_id }}
         permissions:
-          contents: write
+            contents: read
+            pages: write
+            id-token: write
         steps:
+        
         - name: "Check out repository"
           uses: actions/checkout@v4
 
