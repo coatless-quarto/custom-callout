@@ -1,12 +1,18 @@
-# Customcallout Extension For Quarto <img src="https://github.com/user-attachments/assets/7edadf64-a304-436c-b54f-2f76def14c14" align ="right" alt="" width ="150"/>
+# Custom Callout Extension For Quarto <img src="https://github.com/user-attachments/assets/7edadf64-a304-436c-b54f-2f76def14c14" align ="right" alt="" width ="150"/>
 
 > [!IMPORTANT]
 >
 > This extension is under development and is not yet ready for use.
 
-The `customcallout` extension provides a YAML interface to configure a Quarto Callout Block with custom values.
+The `custom-callout` extension provides a YAML interface to configure a Quarto Callout Block with custom values.
 
 ## Installing
+
+To install the `custom-callout` extension, follow these steps:
+
+1. Open your terminal.
+2. Navigate to your Quarto project directory.
+3. Execute the following command:
 
 ```bash
 quarto add coatless-quarto/customcallout
@@ -17,26 +23,58 @@ If you're using version control, you will want to check in this directory.
 
 ## Using
 
-To use the extension, add the following to your document's YAML front matter:
+The `custom-callout` extension allows you to define custom callouts in your YAML front matter and then use them in your Quarto documents.
+Here's a quick overview of the available YAML options:
+
+| Option | Description | Example |
+|--------|-------------|---------|
+| `title` | Default title for the callout (optional) | `title: "Important Note"` |
+| `icon` | Use a default icon (optional) | `icon: true` |
+| `icon-symbol` | Custom symbol or text for the icon | `icon-symbol: "📝"` |
+| `color` | Color for the callout's left border and icon | `color: "#FFA500"` |
+| `appearance` | Callout appearance (optional) | `appearance: simple` |
+| `collapse` | Make the callout collapsible (optional) | `collapse: true` |
+
+You can start using custom callouts in your Quarto project immediately after installation. First, define your custom callouts in the YAML front matter:
 
 ```yaml
 custom-callout:
-    todo: 
-        title: "TODO"
-    jjb:
-        title: "JJB"
+  todo:
+    icon-symbol: "📝"
+    color: "pink"
+  test:
+    title: "Testing Note"
+    icon-symbol: "⚠️"
+    color: "#FFA500"
+filters:
+- custom-callout
 ```
 
-This will create two custom callouts: `todo` and `jjb`. The `title` field is required and will be displayed in the callout block.
 
-> [!NOTE]
->
-> We're currently working on supporting additional fields for the callout block like color, icon, and more.
+Then, use the custom callouts in your Markdown content:
 
+```markdown
+::: todo
+Remember to complete this section.
+:::
 
-## Example
+::: test
+This information is crucial for understanding the concept.
+:::
+```
 
-Here is the source code for a minimal example: [example.qmd](example.qmd).
+## Examples
+
+Here are some examples of custom callouts in action:
+
+::: {.todo}
+This is a custom 'todo' callout with a pink border and a pencil icon.
+:::
+
+::: {.test}
+This is a custom 'test' callout with an orange border and a warning icon.
+:::
+
 
 ## References
 

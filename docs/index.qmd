@@ -59,6 +59,8 @@ custom-callout:
     title: "Testing Note"
     icon-symbol: "⚠️"
     color: "#FFA500"
+filters:
+- custom-callout
 ```
 
 
