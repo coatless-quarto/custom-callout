@@ -36,8 +36,8 @@ local function generateCustomCSS()
       
       -- Setup the custom icon if it is a symbol
       if callout.icon_symbol then
-        css = css .. string.format("div.callout-%s .callout-icon::before {\n", type)
-        css = css .. string.format("  content: '%s';\n", callout.icon_symbol)
+        css = css .. string.format("div.callout.callout-style-default.callout-%s .callout-icon::before {\n", type)
+        css = css .. string.format("  content: '%s';\n", pandoc.utils.stringify(callout.icon_symbol))
         css = css .. "  font-size: 1rem;\n"
         css = css .. "  background-image: none;\n"
         css = css .. "}\n"
@@ -61,7 +61,7 @@ local function parseCustomCallouts(meta)
       customCallouts[k] = {
         type = k,
         title = v.title or k:gsub("^%l", string.upper),
-        icon = v.icon == 'true' or v['icon-symbol'] ~= nil, -- If icon-symbol is defined, we assume it is a symbol
+        icon = v.icon == 'true' or nil,
         appearance = v.appearance or nil,
         collapse = v.collapse or nil,
         icon_symbol = v['icon-symbol'] or nil,
@@ -83,9 +83,14 @@ end
 
 -- Convert div to custom callout if it matches a defined custom callout
 local function convertToCustomCallout(div)
+  -- Check if the div has classes
   for _, class in ipairs(div.classes) do
+    
+    -- Check if the class matches a custom callout
     local callout = customCallouts[class]
+
     if callout then 
+
       -- Create a new Callout with the custom callout parameters
       local calloutParams = {
         type = callout.type,
@@ -106,18 +111,18 @@ end
 
 -- Main filter function
 local function customCalloutFilter(doc)
-  parseCustomCallouts(doc.meta)
 
   -- Walk the AST and process divs
   doc.blocks = doc.blocks:walk({
     Div = convertToCustomCallout
   })
   
-  
+  -- Return the modified document
   return doc
 end
 
 -- Return the Pandoc filter
 return {
-  {Pandoc = customCalloutFilter}
+  Meta = parseCustomCallouts,
+  Pandoc = customCalloutFilter
 }
