@@ -24,15 +24,12 @@ jobs:
           with:
             version: "pre-release"
 
-        # Change to the docs directory
-        - name: "Switch to docs directory"
-          shell: bash
-          run: |
-            cd docs/
-
         # Render the Quarto file
         - name: "Render working directory"
           uses: quarto-dev/quarto-actions/render@v2
+          with:
+            path: "docs"
+
 
         # Upload a tar file that will work with GitHub Pages
         # Make sure to set a retention day to avoid running into a cap
@@ -41,6 +38,8 @@ jobs:
           uses: actions/upload-pages-artifact@v2
           with: 
             retention-days: 1
+            path: 'docs/_site'
+
         
         # Use an Action deploy to push the artifact onto GitHub Pages
         # This requires the `Action` tab being structured to allow for deployment
