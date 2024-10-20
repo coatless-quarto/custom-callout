@@ -1,19 +1,32 @@
 ---
 title: "My Document"
-format: html
+format:
+  html:
+    css: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css
 
 custom-callout:    
   todo:
-    icon-symbol: "⚠️"
+    icon-symbol: "📝"
     color: "pink"
   jjb:
+    icon: true
     title: "fix for JJB"
     icon-symbol: "⚠️"
     color: "#FFA500"
   test:
     title: "Test feature"
     icon: true
-    color: "#FFA500"
+    color: "#801410"
+  fancytest:
+    icon: true
+    title: "Test feature"
+    icon-symbol: "fa-thumbs-up"
+    color: "#801410"
+  not-great:
+    icon: false
+    title: "Not great"
+    icon-symbol: "fa-thumbs-down"
+    color: "#801410"
 filters:
   - custom-callout
 ---
@@ -28,6 +41,15 @@ Please address this issue ...
 
 ::: test
 Let's do a feature test!
+:::
+
+::: fancytest
+Test fontawesome icon
+:::
+
+
+::: not-great
+Test fontawesome icon
 :::
 
 ::: {.callout-note}
