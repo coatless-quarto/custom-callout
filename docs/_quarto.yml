@@ -17,7 +17,7 @@ website:
     contents: 
       - text: "Home"
         file: index.qmd
-      - text: "Example"
+      - text: "Examples"
         file: qcustom-callout-example.qmd
       - section: "Support"
         contents:
