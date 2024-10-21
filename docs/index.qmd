@@ -64,13 +64,8 @@ custom-callout:
   todo:
     icon-symbol: "📝"
     color: "pink"
-  test:
-    title: "Testing Note"
-    icon-symbol: "⚠️"
-    color: "#FFA500"
   thumbs-up:
     title: "Great job!"
-    icon: true
     icon-symbol: "fa-thumbs-up"
     color: "#008000"
 filters:
@@ -85,8 +80,8 @@ Then, use the custom callouts in your Quarto documents like this:
 Remember to complete this section.
 :::
 
-::: test
-This information is crucial for understanding the concept.
+::: thumbs-up
+Great job on completing this task!
 :::
 
 ::: {.todo title="Collapsed Custom Todo (Click to Expand)" collapse="true"}
@@ -98,32 +93,16 @@ This is a custom 'todo' callout that is collapsible and has a custom title.
 
 Here are some examples of custom callouts in action:
 
-::: {.todo}
-This is a custom 'todo' callout with a pink border and a pencil icon.
+::: todo
+Remember to complete this section.
 :::
 
-::: test
-This information is crucial for understanding the concept.
+::: thumbs-up
+Great job on completing this task!
 :::
 
 ::: {.todo title="Collapsed Custom Todo (Click to Expand)" collapse="true"}
 This is a custom 'todo' callout that is collapsible and has a custom title.
-:::
-
-::: {.todo title="Simple Appearance Custom Todo" appearance="simple"}
-This is a custom 'todo' callout that uses a **simple** appearance with a custom title.
-:::
-
-::: {.todo title="Simple Appearance Custom Todo" appearance="minimal"}
-This is a custom 'todo' callout that uses a **minimal** appearance with a custom title.
-:::
-
-::: {.test}
-This is a custom 'test' callout with an orange border and a warning icon.
-:::
-
-::: {.thumbs-up}
-Great job on completing this task!
 :::
 
 For more detailed information on how to use and customize the `{quarto-custom-callout}` extension, please refer to our [Custom Callout Examples](qcustom-callout-example.qmd) or [FAQ](qcustom-callout-faq.qmd).

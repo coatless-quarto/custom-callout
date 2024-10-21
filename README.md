@@ -47,13 +47,8 @@ custom-callout:
   todo:
     icon-symbol: "📝"
     color: "pink"
-  test:
-    title: "Testing Note"
-    icon-symbol: "⚠️"
-    color: "#FFA500"
   thumbs-up:
     title: "Great job!"
-    icon: true
     icon-symbol: "fa-thumbs-up"
     color: "#008000"
 filters:
