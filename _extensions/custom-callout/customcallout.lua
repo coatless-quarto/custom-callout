@@ -1,6 +1,8 @@
 -- customcallout.lua
 local customCallouts = {}
 
+local fa = require("fa")
+
 -- Function to convert color to rgba
 local function colorToRgba(color, alpha)
   if color:sub(1,1) == "#" then
@@ -14,6 +16,11 @@ local function colorToRgba(color, alpha)
   end
 end
 
+-- Function to check if a string starts with "fa-"
+local function isFontAwesomeIcon(icon)
+  return icon ~= nil and icon:sub(1, 3) == "fa-"
+end
+
 -- Generate CSS for custom callouts
 local function generateCustomCSS()
   local css = ""
@@ -22,7 +29,6 @@ local function generateCustomCSS()
   for type, callout in pairs(customCallouts) do
     if callout.color then
       local color = pandoc.utils.stringify(callout.color)
-      local convertedColor = colorToRgba(color, 1)
       
       -- Base color
       css = css .. string.format("div.callout-%s.callout {\n", type)
@@ -42,9 +48,17 @@ local function generateCustomCSS()
       -- Icon Styling
       css = css .. string.format("div.callout-%s.callout-style-default .callout-icon::before, div.callout-%s.callout-titled .callout-icon::before {\n", type, type)
 
-      -- Setup the custom icon if it is a symbol
       if callout.icon_symbol then
-        css = css .. string.format("  content: '%s';\n", pandoc.utils.stringify(callout.icon_symbol))
+        local icon_symbol_str = pandoc.utils.stringify(callout.icon_symbol)
+        if isFontAwesomeIcon(icon_symbol_str) then
+          quarto.log.output("icon_symbol_str is a Font Awesome icon")
+          -- Font Awesome icon
+          css = css .. string.format("  font-family: 'Font Awesome 6 Free';\n")
+          css = css .. string.format("  content: '%s';\n", fa.fa_unicode(icon_symbol_str))         
+        else 
+          -- Custom icon symbol
+          css = css .. string.format("  content: '%s';\n", icon_symbol_str)
+        end
         css = css .. "  background-image: none;\n"
       else 
         css = css .. string.format("  background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"%s\" class=\"bi bi-exclamation-triangle\" viewBox=\"0 0 16 16\"><path d=\"M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z\"/></svg>');\n", escapedColor)

@@ -4,9 +4,9 @@ library(stringr)
 # Read the CSS file
 css_content <- readLines("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css")
 
-# Function to convert hexadecimal to Lua string format
-hex_to_lua_string <- function(hex) {
-  sprintf('"\\\\u%s"', hex)
+# Function to convert unicode to Lua safe string format
+unicode_to_lua_string <- function(hex) {
+  sprintf('"\\\\%s"', hex)
 }
 
 # Extract class names and unicode values
@@ -24,7 +24,7 @@ fa_data <- data.frame(
 )
 
 # Convert unicode values to Lua string format
-fa_data$lua_unicode <- sapply(fa_data$unicode, hex_to_lua_string)
+fa_data$lua_unicode <- sapply(fa_data$unicode, unicode_to_lua_string)
 
 # Generate Lua table
 lua_table <- paste0('  ["', fa_data$class, '"] = ', fa_data$lua_unicode, ",\n", collapse = "")
