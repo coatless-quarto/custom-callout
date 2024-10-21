@@ -24,14 +24,14 @@ The `custom-callout` extension allows you to define custom callouts in your
 YAML front matter and then use them in your Quarto documents.
 Here's a quick overview of the available YAML options:
 
-| Option | Description | Example |
-|--------|-------------|---------|
-| `title` | Default title for the callout (optional) | `title: "Important Note"` |
-| `icon` | Use a default icon (optional) | `icon: "true"` |
-| `icon-symbol` | Custom symbol or text for the icon | `icon-symbol: "📝"` |
-| `color` | Color for the callout's left border and icon | `color: "#FFA500"` |
-| `appearance` | Callout appearance (optional) | `appearance: "simple"` |
-| `collapse` | Make the callout collapsible (optional) | `collapse: "true"` |
+| Option | Description | Default | Possible Values | Example |
+|--------|-------------|---------|-----------------|---------|
+| `title` | Default title for the callout | Callout name | Any string | `title: "Important Note"` |
+| `icon` | Display an icon | `false` | `true`, `false` | `icon: true` |
+| `icon-symbol` | Custom symbol or text for the icon | None | Any string or Unicode character | `icon-symbol: "📝"` |
+| `color` | Color for the callout's left border and background | None | Any valid CSS color name or hex | `color: "#FFA500"` |
+| `appearance` | Callout appearance | `"default"` | `"default"`, `"simple"`, `"minimal"` | `appearance: "simple"` |
+| `collapse` | Make the callout collapsible | `false` | `true`, `false` | `collapse: true` |
 
 You can start using custom callouts in your Quarto project immediately
 after installation. First, define your custom callouts in the YAML front matter:

@@ -61,9 +61,9 @@ filters:
 For each custom callout, you can set the following options:
 
 - `title`: The default title for the callout (optional)
-- `icon`: Set to `true` to use a default icon, or omit for no icon
+- `icon`: Set to `"true"` to use an icon or `"false"` for no icon
 - `icon-symbol`: A custom symbol or text to use as the icon
-- `color`: The color for the callout's left border and icon (can be a named color or hex code)
+- `color`: The color for the callout. You can use any valid CSS color name or hex code.
 - `appearance`: The callout appearance (optional)
 - `collapse`: Whether the callout should be collapsible (optional)
 

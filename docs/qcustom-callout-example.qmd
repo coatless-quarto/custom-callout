@@ -87,6 +87,10 @@ Let's do a feature test!
 ````
 :::
 
+## Sample Custom Callouts with Options
+
+The following examples demonstrate the use of custom callouts with additional options.
+
 ### Title
 
 :::{.panel-tabset}
@@ -155,8 +159,16 @@ Demo of `collapse="true"`.
 Demo of `appearance="simple"`.
 :::
 
+::: {.todo appearance="simple" collapse="true" title="Todo with Simple Appearance and Collapse"}
+Demo of `appearance="simple"` and `collapse="true"`.
+:::
+
 ::: {.todo appearance="minimal" title="Todo with Minimal Appearance"}
 Demo of `appearance="minimal"`.
+:::
+
+::: {.todo appearance="minimal" collapse="true" title="Todo with Minimal Appearance and Collapse"}
+Demo of `appearance="minimal"` and `collapse="true"`.
 :::
 
 ### Source
@@ -166,11 +178,21 @@ Demo of `appearance="minimal"`.
 Demo of `appearance="simple"`.
 :::
 
+::: {.todo appearance="simple" collapse="true" title="Todo with Simple Appearance and Collapse"}
+Demo of `appearance="simple"` and `collapse="true"`.
+:::
+
 ::: {.todo appearance="minimal" title="Todo with Minimal Appearance"}
 Demo of `appearance="minimal"`.
 :::
+
+::: {.todo appearance="minimal" collapse="true" title="Todo with Minimal Appearance and Collapse"}
+Demo of `appearance="minimal"` and `collapse="true"`.
+:::
+
 ````
 :::
+
 
 ## Original Quarto Callout
 
@@ -192,8 +214,16 @@ Demo of `collapse="true"`
 Demo of `appearance="simple"`.
 :::
 
+::: {.callout-note appearance="simple" collapse="true" title="Simple Note Appearance with Title and Collapse"}
+Demo of `appearance="Simple"` and `collapse="true"`.
+:::
+
 ::: {.callout-note appearance="minimal" title="Minimal Note Appearance with Title"}
 Demo of `appearance="minimal"`.
+:::
+
+::: {.callout-note appearance="minimal" collapse="true" title="Minimal Note Appearance with Title and Collapse"}
+Demo of `appearance="minimal"` and `collapse="true"`.
 :::
 
 ### Source
@@ -211,8 +241,17 @@ Demo of `collapse="true"`
 Demo of `appearance="simple"`.
 :::
 
+::: {.callout-note appearance="simple" collapse="true" title="Simple Note Appearance with Title and Collapse"}
+Demo of `appearance="Simple"` and `collapse="true"`.
+:::
+
 ::: {.callout-note appearance="minimal" title="Minimal Note Appearance with Title"}
 Demo of `appearance="minimal"`.
 :::
+
+::: {.callout-note appearance="minimal" collapse="true" title="Minimal Note Appearance with Title and Collapse"}
+Demo of `appearance="minimal"` and `collapse="true"`.
+:::
+
 ````
 :::
