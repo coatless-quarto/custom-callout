@@ -41,11 +41,6 @@ If you're using version control, make sure to include this directory in your rep
 
 ## Usage
 
-The `{quarto-custom-callout}` extension allows you to define custom callouts in your YAML front matter and then use them in your Quarto documents.
-Here's a quick overview of the available YAML options:
-
-## Usage
-
 The `{quarto-custom-callout}` extension allows you to define custom callouts in your YAML front matter and then use them in your Quarto documents. Here's a quick overview of the available YAML options:
 
 | Option | Description | Default | Possible Values | Example |
