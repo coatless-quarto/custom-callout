@@ -22,31 +22,36 @@ local function generateCustomCSS()
   for type, callout in pairs(customCallouts) do
     if callout.color then
       local color = pandoc.utils.stringify(callout.color)
+      local convertedColor = colorToRgba(color, 1)
       
       -- Base color
-      css = css .. string.format("div.callout-style-default.callout-%s {\n", type)
+      css = css .. string.format("div.callout-%s.callout {\n", type)
       css = css .. string.format("  border-left-color: %s;\n", color)
       css = css .. "}\n"
       
       -- Header background
-      css = css .. string.format("div.callout.callout-style-default.callout-%s > .callout-header {\n", type)
+      css = css .. string.format("div.callout-%s.callout-style-default > .callout-header {\n", type)
       css = css .. string.format("  background-color: %s;\n", colorToRgba(color, 0.13))
       css = css .. "}\n"
+
+      -- Collapse Icon
+      css = css .. string.format("div.callout-%s .callout-toggle::before {", type)
+      css = css .. "  background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"rgb(33, 37, 41)\" class=\"bi bi-chevron-down\" viewBox=\"0 0 16 16\"><path fill-rule=\"evenodd\" d=\"M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\"/></svg>');"
+      css = css .. "}\n"
       
-      
+      -- Icon Styling
+      css = css .. string.format("div.callout-%s.callout-style-default .callout-icon::before, div.callout-%s.callout-titled .callout-icon::before {\n", type, type)
+
       -- Setup the custom icon if it is a symbol
       if callout.icon_symbol then
-        css = css .. string.format("div.callout.callout-style-default.callout-%s .callout-icon::before {\n", type)
         css = css .. string.format("  content: '%s';\n", pandoc.utils.stringify(callout.icon_symbol))
-        css = css .. "  font-size: 1rem;\n"
         css = css .. "  background-image: none;\n"
-        css = css .. "}\n"
       else 
-        local escapedColor = color:gsub("#", "%%23")
-        css = css .. string.format("div.callout-%s .callout-icon::before {\n", type)
         css = css .. string.format("  background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"%s\" class=\"bi bi-exclamation-triangle\" viewBox=\"0 0 16 16\"><path d=\"M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z\"/></svg>');\n", escapedColor)
-        css = css .. "}\n"
       end 
+
+      css = css .. "}\n"
+
     end
   end
   return css
