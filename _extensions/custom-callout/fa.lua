@@ -1888,9 +1888,6 @@ local fa_icons = {
 
 -- Function to get Unicode value for a FontAwesome icon name
 local function fa_unicode(icon_name)
-  quarto.log.output("icon_name: " .. icon_name)
-  quarto.log.output("fa_unicode: " .. fa_icons[icon_name])
-
   return fa_icons[icon_name] or nil
 end
 

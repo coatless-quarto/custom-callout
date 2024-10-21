@@ -1,7 +1,13 @@
 # Custom Callout Extension For Quarto <img src="https://github.com/user-attachments/assets/7edadf64-a304-436c-b54f-2f76def14c14" align ="right" alt="" width ="150"/>
 
 The `{quarto-custom-callout}` extension provides a YAML interface to configure a 
-Quarto Callout Block with custom values.
+Quarto Callout with custom values such as its title, icon, icon symbol, color,
+appearance, and collapsibility.
+
+> [!IMPORTANT]
+> 
+> This extension is designed for Quarto HTML documents. 
+> We hope to extend this to other formats in the future.
 
 ## Installing
 
@@ -28,7 +34,7 @@ Here's a quick overview of the available YAML options:
 |--------|-------------|---------|-----------------|---------|
 | `title` | Default title for the callout | Callout name | Any string | `title: "Important Note"` |
 | `icon` | Display an icon | `false` | `true`, `false` | `icon: true` |
-| `icon-symbol` | Custom symbol or text for the icon | None | Any string or Unicode character | `icon-symbol: "📝"` |
+| `icon-symbol` | Custom symbol or text for the icon | None | Any string, unicode, or [FontAwesome](https://fontawesome.com/search?o=r&m=free) class | `icon-symbol: "📝"` |
 | `color` | Color for the callout's left border and background | None | Any valid CSS color name or hex | `color: "#FFA500"` |
 | `appearance` | Callout appearance | `"default"` | `"default"`, `"simple"`, `"minimal"` | `appearance: "simple"` |
 | `collapse` | Make the callout collapsible | `false` | `true`, `false` | `collapse: true` |
@@ -45,6 +51,11 @@ custom-callout:
     title: "Testing Note"
     icon-symbol: "⚠️"
     color: "#FFA500"
+  thumbs-up:
+    title: "Great job!"
+    icon: true
+    icon-symbol: "fa-thumbs-up"
+    color: "#008000"
 filters:
 - custom-callout
 ```
@@ -60,11 +71,16 @@ Remember to complete this section.
 ::: test
 This information is crucial for understanding the concept.
 :::
+
+::: {.thumbs-up title="That was a hard task!"}
+You did a great job completing this task.
+:::
 ```
 
-The above example will render two custom callouts in your document: 
-one with a pink border and a "📝" icon and the other with an orange
-border and a "⚠️" icon. 
+The above example will render three custom callouts in your document: 
+one with a pink border and a "📝" icon, an orange
+border and a "⚠️" icon, and a green border with a thumbs-up icon from 
+[FontAwesome](https://fontawesome.com/search?o=r&m=free).
 
 
 ## Notes

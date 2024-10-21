@@ -11,17 +11,22 @@ custom-callout:
     title: "Testing Note"
     icon-symbol: "⚠️"
     color: "#FFA500"
+  thumbs-up:
+    title: "Great job!"
+    icon: true
+    icon-symbol: "fa-thumbs-up"
+    color: "#008000"
 filters:
 - custom-callout
 ---
 
-The `custom-callout` extension enhances Quarto's built-in callout functionality by allowing you to
+The `{quarto-custom-callout}` extension enhances Quarto's built-in callout functionality by allowing you to
 create and use custom callouts in your Quarto documents. With this extension, you can define your 
 own callout types with custom colors, icons, and appearances.
 
 ## Installation
 
-To install the `custom-callout` extension, follow these steps:
+To install the `{quarto-custom-callout}` extension, follow these steps:
 
 1. Open your terminal.
 2. Navigate to your Quarto project directory.
@@ -36,18 +41,18 @@ If you're using version control, make sure to include this directory in your rep
 
 ## Usage
 
-The `custom-callout` extension allows you to define custom callouts in your YAML front matter and then use them in your Quarto documents.
+The `{quarto-custom-callout}` extension allows you to define custom callouts in your YAML front matter and then use them in your Quarto documents.
 Here's a quick overview of the available YAML options:
 
 ## Usage
 
-The `custom-callout` extension allows you to define custom callouts in your YAML front matter and then use them in your Quarto documents. Here's a quick overview of the available YAML options:
+The `{quarto-custom-callout}` extension allows you to define custom callouts in your YAML front matter and then use them in your Quarto documents. Here's a quick overview of the available YAML options:
 
 | Option | Description | Default | Possible Values | Example |
 |--------|-------------|---------|-----------------|---------|
 | `title` | Default title for the callout | Callout name | Any string | `title: "Important Note"` |
 | `icon` | Display an icon | `false` | `true`, `false` | `icon: true` |
-| `icon-symbol` | Custom symbol or text for the icon | None | Any string or Unicode character | `icon-symbol: "📝"` |
+| `icon-symbol` | Custom symbol or text for the icon | None | Any string, unicode, or [FontAwesome](https://fontawesome.com/search?o=r&m=free) class | `icon-symbol: "📝"` |
 | `color` | Color for the callout's left border and background | None | Any valid CSS color name or hex | `color: "#FFA500"` |
 | `appearance` | Callout appearance | `"default"` | `"default"`, `"simple"`, `"minimal"` | `appearance: "simple"` |
 | `collapse` | Make the callout collapsible | `false` | `true`, `false` | `collapse: true` |
@@ -63,6 +68,11 @@ custom-callout:
     title: "Testing Note"
     icon-symbol: "⚠️"
     color: "#FFA500"
+  thumbs-up:
+    title: "Great job!"
+    icon: true
+    icon-symbol: "fa-thumbs-up"
+    color: "#008000"
 filters:
 - custom-callout
 ```
@@ -79,7 +89,6 @@ Remember to complete this section.
 This information is crucial for understanding the concept.
 :::
 
-
 ::: {.todo title="Collapsed Custom Todo (Click to Expand)" collapse="true"}
 This is a custom 'todo' callout that is collapsible and has a custom title.
 :::
@@ -91,6 +100,10 @@ Here are some examples of custom callouts in action:
 
 ::: {.todo}
 This is a custom 'todo' callout with a pink border and a pencil icon.
+:::
+
+::: test
+This information is crucial for understanding the concept.
 :::
 
 ::: {.todo title="Collapsed Custom Todo (Click to Expand)" collapse="true"}
@@ -109,4 +122,8 @@ This is a custom 'todo' callout that uses a **minimal** appearance with a custom
 This is a custom 'test' callout with an orange border and a warning icon.
 :::
 
-For more detailed information on how to use and customize the `custom-callout` extension, please refer to our [FAQ](qcustom-callout-faq.qmd).
+::: {.thumbs-up}
+Great job on completing this task!
+:::
+
+For more detailed information on how to use and customize the `{quarto-custom-callout}` extension, please refer to our [Custom Callout Examples](qcustom-callout-example.qmd) or [FAQ](qcustom-callout-faq.qmd).

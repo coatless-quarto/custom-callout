@@ -91,7 +91,7 @@ Please fix this issue.
 
 ## Can I override a property for a specific callout instance?
 
-Yes, you can override various properties title for a specific callout instance by adding them as attributes to the callout block. 
+Yes, you can override various properties for a specific callout instance by adding them as attributes to the callout block. 
 
 For example, to set a custom title for a todo item, you can use the `title` attribute:
 
@@ -105,6 +105,8 @@ This needs to be done ASAP.
 This needs to be done ASAP.
 :::
 
+You may not override the `icon-symbol` property for a specific callout instance.
+
 ## Do custom callouts support collapsible content?
 
 Yes, custom callouts support collapsible content. You can set the `collapse` option to `true` in your callout definition to make it collapsible.
@@ -112,6 +114,30 @@ Yes, custom callouts support collapsible content. You can set the `collapse` opt
 ## Can I use custom callouts alongside built-in Quarto callouts?
 
 Yes, you can use custom callouts alongside Quarto's built-in callouts. The custom-callout extension doesn't interfere with the standard callout syntax.
+
+## How do I add FontAwesome icons to my callouts?
+
+To use FontAwesome icons in your callouts, set the `icon-symbol` property to the desired FontAwesome class. For example:
+
+```yaml
+custom-callout:
+  user:
+    title: "User Feedback"
+    icon: true
+    icon-symbol: "fa-user"
+```
+
+Then, use the custom callout in your document:
+
+```markdown
+::: user
+Please provide your feedback.
+:::
+```
+
+This will display the [user](https://fontawesome.com/icons/user?f=classic&s=regular) icon in the callout.
+
+You can find a list of available FontAwesome icons [here](https://fontawesome.com/search?o=r&m=free).
 
 ## How are custom callout styles applied?
 

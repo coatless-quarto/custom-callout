@@ -1,8 +1,6 @@
 ---
 title: "Custom Callout Examples"
-format:
-  html:
-    css: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css
+format: html
 
 custom-callout:    
   todo:
@@ -17,6 +15,11 @@ custom-callout:
     title: "Test feature"
     icon: true
     color: "#801410"
+  thumbs-up:
+    title: "Great job!"
+    icon: true
+    icon-symbol: "fa-thumbs-up"
+    color: "#008000"
 filters:
   - custom-callout
 ---
@@ -44,6 +47,11 @@ custom-callout:
     title: "Test feature"
     icon: true
     color: "#801410"
+  thumbs-up:
+    title: "Great job!"
+    icon: true
+    icon-symbol: "fa-thumbs-up"
+    color: "#008000"
 filters:
   - custom-callout
 ---
@@ -71,6 +79,10 @@ Please address this issue ...
 Let's do a feature test!
 :::
 
+::: thumbs-up
+Hey, a [FontAwesome](https://fontawesome.com/) icon!
+:::
+
 ### Source
 ````md
 ::: todo
@@ -83,6 +95,10 @@ Please address this issue ...
 
 ::: test
 Let's do a feature test!
+:::
+
+::: thumbs-up
+Hey, a [FontAwesome](https://fontawesome.com/) icon!
 :::
 ````
 :::
@@ -206,6 +222,14 @@ This section provides examples of the built-in [Quarto Callout](https://quarto.o
 Hello!
 :::
 
+::: {.callout-note title="Note with Custom Title"}
+Demo of `title="Note with Custom Title"`
+:::
+
+::: {.callout-note icon="false" title="Note with Title and No Icon"}
+Demo of `icon="false"`
+:::
+
 ::: {.callout-note collapse="true" title="Collapsed Note with Title"}
 Demo of `collapse="true"`
 :::
@@ -231,6 +255,14 @@ Demo of `appearance="minimal"` and `collapse="true"`.
 ````md
 ::: {.callout-note}
 Hello!
+:::
+
+::: {.callout-note title="Note with Custom Title"}
+Demo of `title="Note with Custom Title"`
+:::
+
+::: {.callout-note icon="false" title="Note with Title and No Icon"}
+Demo of `icon="false"`
 :::
 
 ::: {.callout-note collapse="true" title="Collapsed Note with Title"}
