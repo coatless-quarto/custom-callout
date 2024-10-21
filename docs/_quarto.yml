@@ -28,7 +28,8 @@ website:
       - section: "Extra"
         contents:
         - qcustom-callout-release-notes.qmd
-        - qcustom-callout-dev-notes.qmd
+        - text: "Development Notes"
+          href: qcustom-callout-dev-notes.qmd
 
 format: 
   html:
