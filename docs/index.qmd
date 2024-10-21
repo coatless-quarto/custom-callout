@@ -33,7 +33,7 @@ To install the `{quarto-custom-callout}` extension, follow these steps:
 3. Execute the following command:
 
 ```bash
-quarto add username/custom-callout
+quarto add coatless-quarto/custom-callout
 ```
 
 This command will download and install the extension under the `_extensions` subdirectory of your Quarto project. 

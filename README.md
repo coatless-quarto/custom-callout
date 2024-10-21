@@ -18,7 +18,7 @@ To install the `{quarto-custom-callout}` extension, follow these steps:
 3. Execute the following command:
 
 ```bash
-quarto add coatless-quarto/customcallout
+quarto add coatless-quarto/custom-callout
 ```
 
 This will install the extension under the `_extensions` subdirectory.
