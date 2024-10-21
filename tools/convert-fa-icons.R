@@ -6,7 +6,7 @@ css_content <- readLines("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.
 
 # Function to convert hexadecimal to Lua string format
 hex_to_lua_string <- function(hex) {
-  paste0('"\\', hex, '"')
+  sprintf('"\\\\u%s"', hex)
 }
 
 # Extract class names and unicode values
@@ -27,21 +27,31 @@ fa_data <- data.frame(
 fa_data$lua_unicode <- sapply(fa_data$unicode, hex_to_lua_string)
 
 # Generate Lua table
-lua_table <- paste0(
-  "local fa_icons = {\n",
-  paste0('  ["', fa_data$class, '"] = ', fa_data$lua_unicode, ",\n", collapse = ""),
-  "}\n\n",
+lua_table <- paste0('  ["', fa_data$class, '"] = ', fa_data$lua_unicode, ",\n", collapse = "")
+
+lua_accessor <- paste0(
   "-- Function to get Unicode value for a FontAwesome icon name\n",
   "local function fa_unicode(icon_name)\n",
   "  return fa_icons[icon_name] or nil\n",
   "end\n\n",
-  
   "return {\n",
   "  fa_unicode = fa_unicode\n",
-  "}\n\n"
+  "}\n"
 )
 
-# Write Lua table to file
-writeLines(lua_table, file("_extensions/custom-callout/fa.lua", "w"))
+cat(
+    "local fa_icons = {\n",
+    lua_table,  
+    "}\n\n",
+    file = "_extensions/custom-callout/fa.lua",
+    sep = ""
+)
+
+cat(
+    lua_accessor,
+    file = "_extensions/custom-callout/fa.lua",
+    sep = "",
+    append = TRUE
+)
 
 print("Lua table has been generated and saved to 'fa.lua'")
