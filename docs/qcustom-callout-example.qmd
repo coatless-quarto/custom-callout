@@ -117,11 +117,23 @@ The following examples demonstrate the use of custom callouts with additional op
 Demo of `title="Todo with a Custom Title!"`.
 :::
 
+::: {.todo}
+## Todo with Title Defined in Content
+Demo of `title` defined as a markdown header in content.
+:::
+
+
 ### Source
 
 ````md
 ::: {.todo title="Todo with a Custom Title!"}
 Demo of `title="Todo with a Custom Title!"`.
+:::
+
+
+::: {.todo}
+## Todo with Title Defined in Content
+Demo of `title` defined as a markdown header in content.
 :::
 ````
 :::
@@ -226,6 +238,11 @@ Hello!
 Demo of `title="Note with Custom Title"`
 :::
 
+::: {.callout-note}
+## Note with Title Defined in Content
+Demo of `title` defined as a markdown header in content.
+:::
+
 ::: {.callout-note icon="false" title="Note with Title and No Icon"}
 Demo of `icon="false"`
 :::
@@ -259,6 +276,11 @@ Hello!
 
 ::: {.callout-note title="Note with Custom Title"}
 Demo of `title="Note with Custom Title"`
+:::
+
+::: {.callout-note}
+## Note with Title Defined in Content
+Demo of `title` defined as a markdown header in content.
 :::
 
 ::: {.callout-note icon="false" title="Note with Title and No Icon"}

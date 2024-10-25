@@ -110,12 +110,20 @@ local function convertToCustomCallout(div)
     local callout = customCallouts[class]
 
     if callout then 
+      -- Use the default title if not provided
+      local title = callout.title
+
+      -- Check to see if the title is specified in the div content
+      if div.content[1] ~= nil and div.content[1].t == "Header" then
+        title = div.content[1]
+        div.content:remove(1)
+      end
 
       -- Create a new Callout with the custom callout parameters
       local calloutParams = {
         type = callout.type,
         content = div.content,
-        title = div.attributes.title or callout.title,
+        title = div.attributes.title or title,
         icon = div.attributes.icon or callout.icon,
         appearance = div.attributes.appearance or callout.appearance,
         collapse = div.attributes.collapse or callout.collapse

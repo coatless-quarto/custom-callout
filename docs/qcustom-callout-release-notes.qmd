@@ -12,6 +12,15 @@ format:
 
 ## Features
 
+- Allow `title` to be specified as a markdown header in the callout's content.
+
+````md
+::: todo
+## Todo with Title Defined as Markdown in Content
+Hello there!
+:::
+````
+
 ## Documentation
 
 ## Bugfixes
