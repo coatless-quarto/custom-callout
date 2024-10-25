@@ -21,6 +21,8 @@ Hello there!
 :::
 ````
 
+- Added Lua type definitions for the `custom-callout` filter.
+
 ## Documentation
 
 ## Bugfixes
@@ -58,7 +60,6 @@ custom-callout:
 filters:
   - custom-callout
 ---
-````
 
 ::: todo
 Hello there!

@@ -1,9 +1,27 @@
--- customcallout.lua
+---@meta
+
+---@class CustomCalloutDefinition
+---@field type string The type/identifier of the callout
+---@field title string|pandoc.Inlines|nil The title of the callout
+---@field icon boolean|nil Whether to show an icon
+---@field appearance string|nil The appearance style ('default', 'minimal', 'simple')
+---@field collapse boolean|string|nil Whether the callout is collapsible
+---@field icon_symbol string|nil Custom icon symbol or font awesome icon
+---@field color string|nil The color of the callout
+---@field background_color string|nil The background color of the callout
+
+---@class CustomCalloutsMap
+
+-- Global variable to store custom callout definitions
+---@type table<string, CustomCalloutDefinition>
 local customCallouts = {}
 
 local fa = require("fa")
 
--- Function to convert color to rgba
+---Converts a valid CSS color string or hexadecimal to RGBA format
+---@param color string The color in hex (#RRGGBB) or named format
+---@param alpha number The alpha value between 0 and 1
+---@return string rgba The color in rgba() or rgb(from color) format
 local function colorToRgba(color, alpha)
   if color:sub(1,1) == "#" then
     local r = tonumber(color:sub(2,3), 16)
@@ -16,12 +34,15 @@ local function colorToRgba(color, alpha)
   end
 end
 
--- Function to check if a string starts with "fa-"
+---Checks if a string represents a Font Awesome icon
+---@param icon string|nil The icon string to check
+---@return boolean is_fa True if the string starts with "fa-"
 local function isFontAwesomeIcon(icon)
   return icon ~= nil and icon:sub(1, 3) == "fa-"
 end
 
--- Generate CSS for custom callouts
+---Generates CSS for all defined custom callouts
+---@return string css The generated CSS rules
 local function generateCustomCSS()
   local css = ""
 
@@ -71,14 +92,15 @@ local function generateCustomCSS()
 end
 
 
--- Parse YAML and extract custom callout definitions
+---Parses custom callout definitions from document metadata
+---@param meta pandoc.Meta The document metadata
 local function parseCustomCallouts(meta)
   if not meta['custom-callout'] then return end
 
   for k, v in pairs(meta['custom-callout']) do
     if type(v) == "table" then
       customCallouts[k] = {
-        type = k,
+        type = tostring(k),
         title = v.title or k:gsub("^%l", string.upper),
         icon = v.icon == 'true' or nil,
         appearance = v.appearance or nil,
@@ -100,7 +122,9 @@ local function parseCustomCallouts(meta)
 end
 
 
--- Convert div to custom callout if it matches a defined custom callout
+---Converts a div to a custom callout if it matches a defined custom callout
+---@param div pandoc.Div The div to potentially convert
+---@return pandoc.Div|quarto.Callout converted The converted callout or original div
 local function convertToCustomCallout(div)
   -- Check if the div has classes
   for _, class in ipairs(div.classes) do
@@ -136,7 +160,12 @@ local function convertToCustomCallout(div)
   return div
 end
 
--- Main filter function
+---Walks the Pandoc document and processes divs to
+---convert to custom callouts
+---@class pandoc.Doc
+---@field blocks pandoc.Blocks
+---@param doc pandoc.Doc The Pandoc document
+---@return pandoc.Doc doc The processed document
 local function customCalloutFilter(doc)
 
   -- Walk the AST and process divs
@@ -150,6 +179,8 @@ end
 
 -- Return the Pandoc filter
 return {
+  ---@type fun(meta: pandoc.Meta)
   Meta = parseCustomCallouts,
+  ---@type fun(doc: pandoc.Doc): pandoc.Doc
   Pandoc = customCalloutFilter
 }
