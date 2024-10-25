@@ -8,9 +8,45 @@ format:
     toc: true
 ---
 
-# 0.0.0-dev.1:  ???? (??-??-????)
+# 0.0.1: Can you hear me now? (10-21-2024)
 
 ## Features
 
-- `custom-callout` enables the creation of custom callouts. 
+- `custom-callout` enables the creation of custom callouts in a Quarto HTML document's YAML header.
+- Specify the custom callout by using a unique key under the `custom-callout` header and setting the following properties:
+  - `icon-symbol`: Set the icon symbol for the callout using a valid string, emoji, or [FontAwesome 6](https://fontawesome.com/search?o=r&m=free) icon.
+  - `color`: Set the color of the callout using a hex code or valid CSS color name.
+  - `icon`: Set to `true` to display an icon.
+  - `title`: Set the title of the callout.
+  - `appearance`: Set the appearance of the callout to:
+    - `"default"` (icon, border and background coloring)
+    - `"simple"` (icon and border coloring), or
+    - `"minimal"` (border coloring).
 
+````md
+---
+title: "Custom Callout Examples"
+format: html
+custom-callout:    
+  todo:
+    icon-symbol: "📝"
+    color: "pink"
+  jjb:
+    icon: true
+    title: "fix for JJB"
+    icon-symbol: "fa-clock"
+    color: "#FFA500"
+    appearance: "simple"
+filters:
+  - custom-callout
+---
+````
+
+::: todo
+Hello there!
+:::
+
+::: jjb
+Please address this issue ...
+:::
+````
