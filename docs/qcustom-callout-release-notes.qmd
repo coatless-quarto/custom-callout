@@ -8,6 +8,15 @@ format:
     toc: true
 ---
 
+# 0.0.1-dev.1: ?? (??-??-????)
+
+## Features
+
+## Documentation
+
+## Bugfixes
+
+
 # 0.0.1: Can you hear me now? (10-21-2024)
 
 ## Features
