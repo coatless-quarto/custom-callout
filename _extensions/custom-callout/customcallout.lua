@@ -51,7 +51,6 @@ local function generateCustomCSS()
       if callout.icon_symbol then
         local icon_symbol_str = pandoc.utils.stringify(callout.icon_symbol)
         if isFontAwesomeIcon(icon_symbol_str) then
-          quarto.log.output("icon_symbol_str is a Font Awesome icon")
           -- Font Awesome icon
           css = css .. string.format("  font-family: 'Font Awesome 6 Free';\n")
           css = css .. string.format("  content: '%s';\n", fa.fa_unicode(icon_symbol_str))         
