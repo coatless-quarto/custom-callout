@@ -3,3 +3,4 @@
 *_files/
 /.luarc.json
 docs/_site/
+.DS_Store
