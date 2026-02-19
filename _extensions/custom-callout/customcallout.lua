@@ -34,6 +34,18 @@ local function colorToRgba(color, alpha)
   end
 end
 
+---Adds HTML dependency for bundled FontAwesome 7 Free Solid font
+local function ensureFontAwesomeDeps()
+  quarto.doc.add_html_dependency({
+    name = "fontawesome-7-free",
+    version = "7.2.0",
+    stylesheets = {"assets/css/fontawesome.css"},
+    resources = {
+      { name = "fa-solid-900.woff2", path = "assets/webfonts/fa-solid-900.woff2" }
+    }
+  })
+end
+
 ---Checks if a string represents a Font Awesome icon
 ---@param icon string|nil The icon string to check
 ---@return boolean is_fa True if the string starts with "fa-"
@@ -73,7 +85,8 @@ local function generateCustomCSS()
         local icon_symbol_str = pandoc.utils.stringify(callout.icon_symbol)
         if isFontAwesomeIcon(icon_symbol_str) then
           -- Font Awesome icon
-          css = css .. "  font-family: 'Font Awesome 6 Free', FontAwesome;\n"
+          css = css .. "  font-family: 'Font Awesome 7 Free';\n"
+          css = css .. "  font-weight: 900;\n"
           css = css .. "  font-style: normal;\n"
           css = css .. string.format("  content: '%s' !important;\n", fa.fa_unicode(icon_symbol_str))
         else 
@@ -120,6 +133,14 @@ local function parseCustomCallouts(meta)
   local customCSS = generateCustomCSS()
   if customCSS ~= "" then
     quarto.doc.include_text('in-header', '<style>\n' .. customCSS .. '</style>')
+  end
+
+  -- Load FontAwesome font dependency if any callout uses FA icons (HTML only)
+  for _, callout in pairs(customCallouts) do
+    if callout.icon_symbol and isFontAwesomeIcon(pandoc.utils.stringify(callout.icon_symbol)) then
+      ensureFontAwesomeDeps()
+      break
+    end
   end
 
 end

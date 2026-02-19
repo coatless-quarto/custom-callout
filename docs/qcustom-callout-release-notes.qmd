@@ -8,7 +8,7 @@ format:
     toc: true
 ---
 
-# 0.0.1-dev.2: ?? (??-??-????)
+# 0.0.1-dev.3: ?? (??-??-????)
 
 ## Features
 
@@ -27,6 +27,7 @@ Hello there!
 
 ## Bugfixes
 
+- Fixed FontAwesome icons rendering as placeholder characters by bundling FA 7 Free Solid font (woff2) and registering it as an HTML dependency.
 - Fixed icons appearing in italics. ([#5](https://github.com/coatless-quarto/custom-callout/issues/5), thanks [@jtkulas](https://github.com/jtkulas))
 
 # 0.0.1: Can you hear me now? (10-21-2024)
@@ -35,7 +36,7 @@ Hello there!
 
 - `custom-callout` enables the creation of custom callouts in a Quarto HTML document's YAML header.
 - Specify the custom callout by using a unique key under the `custom-callout` header and setting the following properties:
-  - `icon-symbol`: Set the icon symbol for the callout using a valid string, emoji, or [FontAwesome 6](https://fontawesome.com/search?o=r&m=free) icon.
+  - `icon-symbol`: Set the icon symbol for the callout using a valid string, emoji, or [FontAwesome 7](https://fontawesome.com/search?o=r&m=free) icon.
   - `color`: Set the color of the callout using a hex code or valid CSS color name.
   - `icon`: Set to `true` to display an icon.
   - `title`: Set the title of the callout.
