@@ -1,0 +1,24 @@
+{
+  "Custom Callout Block": {
+    "prefix": "custom-callout",
+    "body": [
+      "::: {.${1:callout-type}}",
+      "$0",
+      ":::"
+    ],
+    "description": "Insert a custom callout block."
+  },
+  "Custom Callout with Title": {
+    "prefix": "custom-callout-title",
+    "body": [
+      "::: {.${1:callout-type}}",
+      "",
+      "## ${2:Title}",
+      "",
+      "$0",
+      "",
+      ":::"
+    ],
+    "description": "Insert a custom callout block with a title."
+  }
+}
