@@ -1,6 +1,6 @@
 {
   "Custom Callout Block": {
-    "prefix": "custom-callout",
+    "prefix": "callout",
     "body": [
       "::: {.${1:callout-type}}",
       "$0",
@@ -9,7 +9,7 @@
     "description": "Insert a custom callout block."
   },
   "Custom Callout with Title": {
-    "prefix": "custom-callout-title",
+    "prefix": "callout-title",
     "body": [
       "::: {.${1:callout-type}}",
       "",
