@@ -24,7 +24,7 @@ filters:
   - custom-callout
 ---
 
-This document provides examples of custom callouts.
+This document provides examples of custom callouts in HTML format. For RevealJS presentation examples, see the [RevealJS](qcustom-callout-revealjs.qmd) page.
 
 ## Document YAML
 

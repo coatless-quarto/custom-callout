@@ -21,7 +21,7 @@ filters:
 ---
 
 The `{quarto-custom-callout}` extension enhances Quarto's built-in callout functionality by allowing you to
-create and use custom callouts in your Quarto documents. With this extension, you can define your 
+create and use custom callouts in your Quarto documents and RevealJS presentations. With this extension, you can define your
 own callout types with custom colors, icons, and appearances.
 
 ## Installation
@@ -100,4 +100,4 @@ Great job on completing this task!
 This is a custom 'todo' callout that is collapsible and has a custom title.
 :::
 
-For more detailed information on how to use and customize the `{quarto-custom-callout}` extension, please refer to our [Custom Callout Examples](qcustom-callout-example.qmd) or [FAQ](qcustom-callout-faq.qmd).
+For more detailed information on how to use and customize the `{quarto-custom-callout}` extension, please refer to our [Custom Callout Examples](qcustom-callout-example.qmd), [RevealJS](qcustom-callout-revealjs.qmd), or [FAQ](qcustom-callout-faq.qmd).

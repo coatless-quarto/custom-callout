@@ -18,7 +18,7 @@ The custom-callout extension is a Quarto filter that allows you to create and us
 It extends the built-in callout functionality, enabling you to define your own callout types with custom colors, icons, and appearances.
 
 :::{.callout-important}
-The custom-callout extension only works with Quarto HTML documents currently. We're looking into expanding support for other output formats in the future.
+The custom-callout extension works with Quarto HTML documents and RevealJS presentations. We're looking into expanding support for other output formats in the future.
 :::
 
 ## How do I install the custom-callout extension?
@@ -152,8 +152,9 @@ Alternatively, you can add custom CSS to your document to override the default s
 
 ## Is this extension compatible with all Quarto output formats?
 
-The custom-callout extension is primarily designed for HTML output. While it may work with other formats to some extent, 
-the full range of customization options (especially custom icons and colors) might not be available in non-HTML outputs.
+The custom-callout extension supports HTML documents and RevealJS presentations. RevealJS has full support for custom colors, icons (emoji and FontAwesome), and appearance styles. Collapsible callouts are not supported in RevealJS due to the presentation format.
+
+Other output formats (PDF, Typst, DOCX) are not yet fully supported.
 
 
 ## How does the quarto-custom-callout extension compare to the quarto-custom-numbered-blocks extension?

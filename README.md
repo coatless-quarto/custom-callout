@@ -5,8 +5,8 @@ Quarto Callout with custom values such as its title, icon, icon symbol, color,
 appearance, and collapsibility.
 
 > [!IMPORTANT]
-> 
-> This extension is designed for Quarto HTML documents. 
+>
+> This extension supports Quarto HTML documents and RevealJS presentations.
 > We hope to extend this to other formats in the future.
 
 ## Installing
