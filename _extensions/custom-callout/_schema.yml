@@ -1,0 +1,32 @@
+$schema: https://m.canouil.dev/quarto-wizard/assets/schema/v1/extension-schema.json
+
+options:
+  title:
+    type: string
+    description: "Default title for the custom callout (defaults to the capitalised type name)."
+  icon:
+    type: boolean
+    description: "Whether to show an icon in the callout header."
+  icon-symbol:
+    type: string
+    description: "Emoji or FontAwesome icon identifier (e.g., 'fa-star'). FontAwesome icons must start with 'fa-'."
+  color:
+    type: string
+    description: "Border and icon colour for the callout."
+    completion:
+      type: color
+  background-color:
+    type: string
+    description: "Background colour for the callout."
+    completion:
+      type: color
+  appearance:
+    type: string
+    enum:
+      - default
+      - simple
+      - minimal
+    description: "Visual style of the callout."
+  collapse:
+    type: boolean
+    description: "Whether the callout is collapsible."
