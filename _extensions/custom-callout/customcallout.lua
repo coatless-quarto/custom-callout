@@ -34,6 +34,35 @@ local function colorToRgba(color, alpha)
   end
 end
 
+---CSS named color to hex lookup (without #, uppercase)
+---@type table<string, string>
+local cssNamedColors = {
+  -- CSS Level 1
+  black = "000000", silver = "C0C0C0", gray = "808080", white = "FFFFFF",
+  maroon = "800000", red = "FF0000", purple = "800080", fuchsia = "FF00FF",
+  green = "008000", lime = "00FF00", olive = "808000", yellow = "FFFF00",
+  navy = "000080", blue = "0000FF", teal = "008080", aqua = "00FFFF",
+  -- Extended common colors
+  orange = "FFA500", pink = "FFC0CB", brown = "A52A2A",
+  cyan = "00FFFF", grey = "808080",
+  crimson = "DC143C", coral = "FF7F50", gold = "FFD700",
+  indigo = "4B0082", violet = "EE82EE",
+  steelblue = "4682B4", dodgerblue = "1E90FF",
+  forestgreen = "228B22", tomato = "FF6347",
+  darkorange = "FF8C00", firebrick = "B22222",
+  slategray = "708090", darkred = "8B0000",
+}
+
+---Converts a color string to a 6-digit uppercase hex value (without #)
+---@param color string The color in hex (#RRGGBB) or named CSS format
+---@return string|nil hex The 6-digit hex string, or nil if conversion fails
+local function colorToHex(color)
+  if color:sub(1, 1) == "#" then
+    return color:sub(2):upper()
+  end
+  return cssNamedColors[color:lower()]
+end
+
 ---Adds HTML dependency for bundled FontAwesome 7 Free Solid font
 local function ensureFontAwesomeDeps()
   quarto.doc.add_html_dependency({
@@ -54,32 +83,40 @@ local function isFontAwesomeIcon(icon)
 end
 
 ---Generates CSS for all defined custom callouts
+---@param isRevealJS boolean Whether the output format is RevealJS
 ---@return string css The generated CSS rules
-local function generateCustomCSS()
+local function generateCustomCSS(isRevealJS)
   local css = ""
+  -- RevealJS uses `.reveal div.callout...` selectors with higher specificity,
+  -- so we need to match that prefix. It also uses `.callout-title` instead
+  -- of `.callout-header` for the header element.
+  local prefix = isRevealJS and ".reveal " or ""
+  local headerClass = isRevealJS and ".callout-title" or ".callout-header"
 
   -- Translate YAML callout information for custom callouts
   for type, callout in pairs(customCallouts) do
     if callout.color then
       local color = pandoc.utils.stringify(callout.color)
-      
+
       -- Base color
-      css = css .. string.format("div.callout-%s.callout {\n", type)
+      css = css .. string.format("%sdiv.callout-%s.callout {\n", prefix, type)
       css = css .. string.format("  border-left-color: %s;\n", color)
       css = css .. "}\n"
-      
+
       -- Header background
-      css = css .. string.format("div.callout-%s.callout-style-default > .callout-header {\n", type)
+      css = css .. string.format("%sdiv.callout-%s.callout-style-default %s {\n", prefix, type, headerClass)
       css = css .. string.format("  background-color: %s;\n", colorToRgba(color, 0.13))
       css = css .. "}\n"
 
-      -- Collapse Icon
-      css = css .. string.format("div.callout-%s .callout-toggle::before {", type)
-      css = css .. "  background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"rgb(33, 37, 41)\" class=\"bi bi-chevron-down\" viewBox=\"0 0 16 16\"><path fill-rule=\"evenodd\" d=\"M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\"/></svg>');"
-      css = css .. "}\n"
+      -- Collapse Icon (not supported in RevealJS)
+      if not isRevealJS then
+        css = css .. string.format("div.callout-%s .callout-toggle::before {", type)
+        css = css .. "  background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"rgb(33, 37, 41)\" class=\"bi bi-chevron-down\" viewBox=\"0 0 16 16\"><path fill-rule=\"evenodd\" d=\"M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\"/></svg>');"
+        css = css .. "}\n"
+      end
 
       -- Icon Styling
-      css = css .. string.format("div.callout-%s.callout-style-default .callout-icon::before, div.callout-%s.callout-titled .callout-icon::before {\n", type, type)
+      css = css .. string.format("%sdiv.callout-%s.callout-style-default .callout-icon::before, %sdiv.callout-%s.callout-titled .callout-icon::before {\n", prefix, type, prefix, type)
 
       if callout.icon_symbol then
         local icon_symbol_str = pandoc.utils.stringify(callout.icon_symbol)
@@ -89,16 +126,16 @@ local function generateCustomCSS()
           css = css .. "  font-weight: 900;\n"
           css = css .. "  font-style: normal;\n"
           css = css .. string.format("  content: '%s' !important;\n", fa.fa_unicode(icon_symbol_str))
-        else 
+        else
           -- Custom icon symbol
           css = css .. string.format("  content: '%s';\n", icon_symbol_str)
         end
         css = css .. "  background-image: none;\n"
-      else 
+      else
         -- The fallback case
         local escapedColor = color:gsub("#", "%%23")  -- Escape # in hex colors
         css = css .. string.format("  background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"%s\" class=\"bi bi-exclamation-triangle\" viewBox=\"0 0 16 16\"><path d=\"M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z\"/></svg>');\n", escapedColor)
-      end 
+      end
 
       css = css .. "}\n"
 
@@ -107,6 +144,46 @@ local function generateCustomCSS()
   return css
 end
 
+
+---Generates LaTeX \definecolor commands for PDF output
+---@return string latex The LaTeX color definitions
+local function generatePdfStyles()
+  local latex = ""
+  for type, callout in pairs(customCallouts) do
+    if callout.color then
+      local hex = colorToHex(pandoc.utils.stringify(callout.color))
+      if hex then
+        latex = latex .. string.format(
+          "\\definecolor{quarto-callout-%s-color}{HTML}{%s}\n", type, hex
+        )
+        latex = latex .. string.format(
+          "\\definecolor{quarto-callout-%s-color-frame}{HTML}{%s}\n", type, hex
+        )
+      end
+    end
+  end
+  return latex
+end
+
+---Generates Typst color definitions for Typst output
+---@return string typst The Typst style definitions
+local function generateTypstStyles()
+  local typst = ""
+  for type, callout in pairs(customCallouts) do
+    if callout.color then
+      local hex = colorToHex(pandoc.utils.stringify(callout.color))
+      if hex then
+        typst = typst .. string.format(
+          '#let quarto-callout-%s-color = rgb("#%s")\n', type, hex
+        )
+        typst = typst .. string.format(
+          '#let quarto-callout-%s-color-frame = rgb("#%s")\n', type, hex
+        )
+      end
+    end
+  end
+  return typst
+end
 
 ---Parses custom callout definitions from document metadata
 ---@param meta pandoc.Meta The document metadata
@@ -129,17 +206,29 @@ local function parseCustomCallouts(meta)
   end
 
 
-  -- Generate and add custom CSS to the document
-  local customCSS = generateCustomCSS()
-  if customCSS ~= "" then
-    quarto.doc.include_text('in-header', '<style>\n' .. customCSS .. '</style>')
-  end
-
-  -- Load FontAwesome font dependency if any callout uses FA icons (HTML only)
-  for _, callout in pairs(customCallouts) do
-    if callout.icon_symbol and isFontAwesomeIcon(pandoc.utils.stringify(callout.icon_symbol)) then
-      ensureFontAwesomeDeps()
-      break
+  -- Detect format and inject appropriate styles
+  local isRevealJS = quarto.doc.is_format("revealjs")
+  if quarto.doc.is_format("html") or isRevealJS then
+    local customCSS = generateCustomCSS(isRevealJS)
+    if customCSS ~= "" then
+      quarto.doc.include_text('in-header', '<style>\n' .. customCSS .. '</style>')
+    end
+    -- Load FontAwesome font dependency (HTML only)
+    for _, callout in pairs(customCallouts) do
+      if callout.icon_symbol and isFontAwesomeIcon(pandoc.utils.stringify(callout.icon_symbol)) then
+        ensureFontAwesomeDeps()
+        break
+      end
+    end
+  elseif quarto.doc.is_format("pdf") then
+    local pdfStyles = generatePdfStyles()
+    if pdfStyles ~= "" then
+      quarto.doc.include_text('in-header', pdfStyles)
+    end
+  elseif quarto.doc.is_format("typst") then
+    local typstStyles = generateTypstStyles()
+    if typstStyles ~= "" then
+      quarto.doc.include_text('in-header', typstStyles)
     end
   end
 

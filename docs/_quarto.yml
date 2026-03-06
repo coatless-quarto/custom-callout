@@ -19,6 +19,8 @@ website:
         file: index.qmd
       - text: "Examples"
         file: qcustom-callout-example.qmd
+      - text: "RevealJS"
+        file: qcustom-callout-revealjs.qmd
       - section: "Support"
         contents:
         - text: "FAQ"

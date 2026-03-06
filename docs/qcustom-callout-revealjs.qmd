@@ -1,0 +1,52 @@
+---
+title: "RevealJS Support"
+format:
+  html:
+    toc: true
+---
+
+The `{quarto-custom-callout}` extension works with [RevealJS](https://quarto.org/docs/presentations/revealjs/) presentations. Custom colors, emoji icons, FontAwesome icons, and appearance styles are all supported. Collapsible callouts are not available in RevealJS due to the nature of the presentation format. For more details on custom callout types in Quarto, see the [Quarto Callout Types documentation](https://quarto.org/docs/authoring/callouts.html#callout-types) and [quarto-dev/quarto-cli#1328](https://github.com/quarto-dev/quarto-cli/issues/1328).
+
+## Usage
+
+To use custom callouts in a RevealJS presentation, set `format: revealjs` and define your callouts under `custom-callout` as usual:
+
+````yaml
+---
+title: "My Presentation"
+format: revealjs
+custom-callout:
+  todo:
+    icon-symbol: "📝"
+    color: "pink"
+  thumbs-up:
+    title: "Great job!"
+    icon: true
+    icon-symbol: "fa-thumbs-up"
+    color: "#008000"
+filters:
+  - custom-callout
+---
+````
+
+Then use them in your slides:
+
+````md
+## Slide Title
+
+::: todo
+Remember to complete this section.
+:::
+
+::: thumbs-up
+Great job on completing this task!
+:::
+````
+
+## Live Example
+
+<a href="qcustom-callout-example-revealjs.html" target="_blank" rel="noopener">Open presentation in a new window &#x2197;</a>
+
+```{=html}
+<iframe class="slide-deck" src="qcustom-callout-example-revealjs.html" style="width: 100%; aspect-ratio: 1050/700; border: 1px solid #dee2e6; border-radius: 4px;"></iframe>
+```

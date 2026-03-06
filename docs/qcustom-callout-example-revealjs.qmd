@@ -1,0 +1,69 @@
+---
+title: "Custom Callout RevealJS Examples"
+format: revealjs
+
+custom-callout:
+  todo:
+    icon-symbol: "📝"
+    color: "pink"
+  jjb:
+    icon: true
+    title: "fix for JJB"
+    icon-symbol: "⚠️"
+    color: "#FFA500"
+  test:
+    title: "Test feature"
+    icon: true
+    color: "#801410"
+  thumbs-up:
+    title: "Great job!"
+    icon: true
+    icon-symbol: "fa-thumbs-up"
+    color: "#008000"
+filters:
+  - custom-callout
+---
+
+## Custom Callouts in RevealJS
+
+Custom callouts work in RevealJS presentations with full support for
+custom colors, emoji icons, and FontAwesome icons.
+
+::: todo
+Remember to complete this section.
+:::
+
+::: thumbs-up
+Great job on completing this task!
+:::
+
+## More Custom Callouts
+
+::: jjb
+Please address this issue ...
+:::
+
+::: test
+Let's do a feature test!
+:::
+
+## Custom Titles
+
+::: {.todo title="Todo with a Custom Title!"}
+Demo of `title="Todo with a Custom Title!"`.
+:::
+
+::: {.todo}
+## Todo with Title Defined in Content
+Demo of `title` defined as a markdown header in content.
+:::
+
+## Appearance Styles
+
+::: {.todo appearance="simple" title="Todo with Simple Appearance"}
+Demo of `appearance="simple"`.
+:::
+
+::: {.todo appearance="minimal" title="Todo with Minimal Appearance"}
+Demo of `appearance="minimal"`.
+:::
