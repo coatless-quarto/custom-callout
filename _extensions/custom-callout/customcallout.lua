@@ -1,26 +1,39 @@
----@meta
+---@alias CustomCallout.Appearance "default"|"simple"|"minimal"
 
----@class CustomCalloutDefinition
----@field type string The type/identifier of the callout
----@field title string|pandoc.Inlines|nil The title of the callout
----@field icon boolean|nil Whether to show an icon
----@field appearance string|nil The appearance style ('default', 'minimal', 'simple')
----@field collapse boolean|string|nil Whether the callout is collapsible
----@field icon_symbol string|nil Custom icon symbol or font awesome icon
+---A custom callout definition from the `custom-callout` metadata, with its values normalized
+---@class CustomCallout.Definition
+---@field type string The type/identifier of the callout (its key under `custom-callout`)
+---@field title string|pandoc.Inlines The title of the callout (defaults to the capitalized type)
+---@field icon boolean|nil Whether to show an icon (nil uses Quarto's default)
+---@field appearance CustomCallout.Appearance|nil The appearance style (Quarto treats other values as "default")
+---@field collapse boolean|pandoc.Inlines|nil Whether the callout is collapsible, as written in the YAML (false becomes nil)
+---@field icon_symbol string|nil Custom icon symbol, or a known FontAwesome icon name ("fa-...")
 ---@field color string|nil The color of the callout
----@field background_color string|nil The background color of the callout
 
----@class CustomCalloutsMap
-
--- Global variable to store custom callout definitions
----@type table<string, CustomCalloutDefinition>
+-- Custom callout definitions by type
+---@type table<string, CustomCallout.Definition>
 local customCallouts = {}
 
 -- Callout types in sorted order, so the generated styles are the same on every render
 ---@type string[]
 local calloutTypes = {}
 
+-- Whether any callout uses a FontAwesome icon
+local needsFontAwesome = false
+
 local fa = require("fa")
+
+-- Chevron for the collapse toggle
+local CHEVRON_ICON = "url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"rgb(33, 37, 41)\" class=\"bi bi-chevron-down\" viewBox=\"0 0 16 16\"><path fill-rule=\"evenodd\" d=\"M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\"/></svg>')"
+
+-- Default icon, a warning triangle; %s is the fill color with '#' escaped as %23
+local DEFAULT_ICON = "url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"%s\" class=\"bi bi-exclamation-triangle\" viewBox=\"0 0 16 16\"><path d=\"M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z\"/></svg>')"
+
+-- Quarto's callout cross-reference prefixes, as in #nte-my-note
+local calloutCrossrefTypes = { nte = true, wrn = true, cau = true, tip = true, imp = true }
+
+-- Div attributes that set this extension's options, so they aren't passed on to the callout
+local OPTION_ATTRIBUTES = { "title", "icon", "appearance", "collapse" }
 
 ---Returns the digits of a hex color, expanding the short forms #RGB and #RGBA
 ---@param color string The color string
@@ -51,36 +64,6 @@ local function colorToRgba(color, alpha)
     -- For named colors, we use the functional notation of rgba()
     return string.format("rgb(from %s r g b / %.0f%%)", color, alpha * 100)
   end
-end
-
----CSS named color to hex lookup (without #, uppercase)
----@type table<string, string>
-local cssNamedColors = {
-  -- CSS Level 1
-  black = "000000", silver = "C0C0C0", gray = "808080", white = "FFFFFF",
-  maroon = "800000", red = "FF0000", purple = "800080", fuchsia = "FF00FF",
-  green = "008000", lime = "00FF00", olive = "808000", yellow = "FFFF00",
-  navy = "000080", blue = "0000FF", teal = "008080", aqua = "00FFFF",
-  -- Extended common colors
-  orange = "FFA500", pink = "FFC0CB", brown = "A52A2A",
-  cyan = "00FFFF", grey = "808080",
-  crimson = "DC143C", coral = "FF7F50", gold = "FFD700",
-  indigo = "4B0082", violet = "EE82EE",
-  steelblue = "4682B4", dodgerblue = "1E90FF",
-  forestgreen = "228B22", tomato = "FF6347",
-  darkorange = "FF8C00", firebrick = "B22222",
-  slategray = "708090", darkred = "8B0000",
-}
-
----Converts a color string to a 6-digit uppercase hex value (without #)
----@param color string The color in hex (#RGB, #RRGGBB) or named CSS format
----@return string|nil hex The 6-digit hex string, or nil if conversion fails
-local function colorToHex(color)
-  if color:sub(1, 1) == "#" then
-    local digits = hexDigits(color)
-    return digits and digits:sub(1, 6):upper()
-  end
-  return cssNamedColors[color:lower()]
 end
 
 ---Adds HTML dependency for the bundled FontAwesome 7 Free Solid and Brands fonts
@@ -119,196 +102,145 @@ local function toBoolean(value)
   return nil
 end
 
+---Reads a YAML string option
+---@param value any The metadata value
+---@return string|nil str The value as plain text, or nil if unset
+local function toString(value)
+  if value == nil then
+    return nil
+  end
+  return pandoc.utils.stringify(value)
+end
+
+---Generates the CSS declarations for a callout's icon
+---@param callout CustomCallout.Definition The callout definition
+---@return string|nil declarations The declarations, or nil if the icon keeps Quarto's styling
+local function iconDeclarations(callout)
+  local symbol = callout.icon_symbol
+  if isFontAwesomeIcon(symbol) then
+    ---@cast symbol string
+    -- Font Awesome icon, from the brands font for brand logos
+    local family, weight = "Font Awesome 7 Free", 900
+    if fa.fa_is_brand(symbol) then
+      family, weight = "Font Awesome 7 Brands", 400
+    end
+    return string.format(
+      "  font-family: '%s';\n  font-weight: %d;\n  font-style: normal;\n  content: '%s' !important;\n  background-image: none;\n",
+      family, weight, fa.fa_unicode(symbol)
+    )
+  elseif symbol then
+    -- Custom icon symbol
+    return string.format("  content: '%s';\n  background-image: none;\n", symbol)
+  elseif callout.color then
+    -- The fallback case: the default icon in the callout's color
+    local escapedColor = callout.color:gsub("#", "%%23")
+    return string.format("  background-image: %s;\n", DEFAULT_ICON:format(escapedColor))
+  end
+  return nil
+end
+
 ---Generates CSS for all defined custom callouts
 ---@param isRevealJS boolean Whether the output format is RevealJS
 ---@return string css The generated CSS rules
 local function generateCustomCSS(isRevealJS)
-  local css = ""
+  ---@type string[]
+  local css = {}
   -- RevealJS uses `.reveal div.callout...` selectors with higher specificity,
   -- so we need to match that prefix. It also uses `.callout-title` instead
   -- of `.callout-header` for the header element.
   local prefix = isRevealJS and ".reveal " or ""
   local headerClass = isRevealJS and ".callout-title" or ".callout-header"
 
-  -- Translate YAML callout information for custom callouts
   for _, type in ipairs(calloutTypes) do
     local callout = customCallouts[type]
-    local color = callout.color and pandoc.utils.stringify(callout.color)
+    local selector = prefix .. "div.callout-" .. type
+    local color = callout.color
+
     if color then
-      -- Base color
-      css = css .. string.format("%sdiv.callout-%s.callout {\n", prefix, type)
-      css = css .. string.format("  border-left-color: %s;\n", color)
-      css = css .. "}\n"
+      -- Base color and header background
+      css[#css + 1] = string.format("%s.callout {\n  border-left-color: %s;\n}\n", selector, color)
+      css[#css + 1] = string.format("%s.callout-style-default %s {\n  background-color: %s;\n}\n",
+        selector, headerClass, colorToRgba(color, 0.13))
 
-      -- Header background
-      css = css .. string.format("%sdiv.callout-%s.callout-style-default %s {\n", prefix, type, headerClass)
-      css = css .. string.format("  background-color: %s;\n", colorToRgba(color, 0.13))
-      css = css .. "}\n"
-
-      -- Collapse Icon (not supported in RevealJS)
+      -- Collapse icon (not supported in RevealJS)
       if not isRevealJS then
-        css = css .. string.format("div.callout-%s .callout-toggle::before {", type)
-        css = css .. "  background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"rgb(33, 37, 41)\" class=\"bi bi-chevron-down\" viewBox=\"0 0 16 16\"><path fill-rule=\"evenodd\" d=\"M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\"/></svg>');"
-        css = css .. "}\n"
+        css[#css + 1] = string.format("%s .callout-toggle::before {  background-image: %s;}\n", selector, CHEVRON_ICON)
       end
     end
 
-    -- Icon Styling (the default icon takes its fill from the color)
-    if callout.icon_symbol or color then
-      css = css .. string.format("%sdiv.callout-%s.callout-style-default .callout-icon::before, %sdiv.callout-%s.callout-titled .callout-icon::before {\n", prefix, type, prefix, type)
-
-      if callout.icon_symbol then
-        local icon_symbol_str = pandoc.utils.stringify(callout.icon_symbol)
-        if isFontAwesomeIcon(icon_symbol_str) then
-          -- Font Awesome icon, from the brands font for brand logos
-          if fa.fa_is_brand(icon_symbol_str) then
-            css = css .. "  font-family: 'Font Awesome 7 Brands';\n"
-            css = css .. "  font-weight: 400;\n"
-          else
-            css = css .. "  font-family: 'Font Awesome 7 Free';\n"
-            css = css .. "  font-weight: 900;\n"
-          end
-          css = css .. "  font-style: normal;\n"
-          css = css .. string.format("  content: '%s' !important;\n", fa.fa_unicode(icon_symbol_str))
-        else
-          -- Custom icon symbol
-          css = css .. string.format("  content: '%s';\n", icon_symbol_str)
-        end
-        css = css .. "  background-image: none;\n"
-      elseif color then
-        -- The fallback case
-        local escapedColor = color:gsub("#", "%%23")  -- Escape # in hex colors
-        css = css .. string.format("  background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"%s\" class=\"bi bi-exclamation-triangle\" viewBox=\"0 0 16 16\"><path d=\"M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z\"/></svg>');\n", escapedColor)
-      end
-
-      css = css .. "}\n"
+    local icon = iconDeclarations(callout)
+    if icon then
+      css[#css + 1] = string.format("%s.callout-style-default .callout-icon::before, %s.callout-titled .callout-icon::before {\n%s}\n",
+        selector, selector, icon)
     end
   end
-  return css
+  return table.concat(css)
 end
 
+---Reads one custom callout definition from its metadata
+---@param key string The callout type (its key under `custom-callout`)
+---@param options table The callout's metadata map
+---@return CustomCallout.Definition definition The normalized definition
+local function readDefinition(key, options)
+  local icon_symbol = toString(options['icon-symbol'])
 
----Generates LaTeX \definecolor commands for PDF output
----@return string latex The LaTeX color definitions
-local function generatePdfStyles()
-  local latex = ""
-  for _, type in ipairs(calloutTypes) do
-    local callout = customCallouts[type]
-    if callout.color then
-      local hex = colorToHex(pandoc.utils.stringify(callout.color))
-      if hex then
-        latex = latex .. string.format(
-          "\\definecolor{quarto-callout-%s-color}{HTML}{%s}\n", type, hex
-        )
-        latex = latex .. string.format(
-          "\\definecolor{quarto-callout-%s-color-frame}{HTML}{%s}\n", type, hex
-        )
-      end
-    end
+  -- An unknown FontAwesome name falls back to the default icon
+  if isFontAwesomeIcon(icon_symbol) and fa.fa_unicode(icon_symbol --[[@as string]]) == nil then
+    quarto.log.warning(string.format(
+      "custom-callout: unknown FontAwesome icon '%s' for the '%s' callout; using the default icon",
+      icon_symbol, key
+    ))
+    icon_symbol = nil
   end
-  return latex
-end
 
----Generates Typst color definitions for Typst output
----@return string typst The Typst style definitions
-local function generateTypstStyles()
-  local typst = ""
-  for _, type in ipairs(calloutTypes) do
-    local callout = customCallouts[type]
-    if callout.color then
-      local hex = colorToHex(pandoc.utils.stringify(callout.color))
-      if hex then
-        typst = typst .. string.format(
-          '#let quarto-callout-%s-color = rgb("#%s")\n', type, hex
-        )
-        typst = typst .. string.format(
-          '#let quarto-callout-%s-color-frame = rgb("#%s")\n', type, hex
-        )
-      end
-    end
-  end
-  return typst
+  return {
+    type = key,
+    title = options.title or key:gsub("^%l", string.upper),
+    icon = toBoolean(options.icon),
+    appearance = toString(options.appearance) --[[@as CustomCallout.Appearance|nil]],
+    collapse = options.collapse or nil,
+    icon_symbol = icon_symbol,
+    color = toString(options.color)
+  }
 end
 
 ---Parses custom callout definitions from document metadata
 ---@param meta pandoc.Meta The document metadata
 local function parseCustomCallouts(meta)
-  if not meta['custom-callout'] then return end
+  local definitions = meta['custom-callout']
+  if type(definitions) ~= "table" then return end
 
-  for k, v in pairs(meta['custom-callout']) do
-    if type(v) == "table" then
-      customCallouts[k] = {
-        type = tostring(k),
-        title = v.title or k:gsub("^%l", string.upper),
-        icon = toBoolean(v.icon),
-        appearance = v.appearance or nil,
-        collapse = v.collapse or nil,
-        icon_symbol = v['icon-symbol'] or nil,
-        color = v.color or nil,
-        background_color = v['background-color'] or nil
-      }
+  for k, v in pairs(definitions) do
+    if type(k) == "string" and type(v) == "table" then
+      local callout = readDefinition(k, v)
+      customCallouts[k] = callout
       table.insert(calloutTypes, k)
-
-      -- An unknown FontAwesome name falls back to the default icon
-      local icon_symbol = customCallouts[k].icon_symbol
-      if icon_symbol then
-        local name = pandoc.utils.stringify(icon_symbol)
-        if isFontAwesomeIcon(name) and fa.fa_unicode(name) == nil then
-          quarto.log.warning(string.format(
-            "custom-callout: unknown FontAwesome icon '%s' for the '%s' callout; using the default icon",
-            name, k
-          ))
-          customCallouts[k].icon_symbol = nil
-        end
-      end
+      needsFontAwesome = needsFontAwesome or isFontAwesomeIcon(callout.icon_symbol)
     end
   end
   table.sort(calloutTypes)
 
-
-  -- Detect format and inject appropriate styles
-  local isRevealJS = quarto.doc.is_format("revealjs")
-  if quarto.doc.is_format("html") or isRevealJS then
-    local customCSS = generateCustomCSS(isRevealJS)
+  -- Styles only apply to HTML and RevealJS. Other formats use Quarto's styling
+  -- for unknown callout types, which can't be changed per type.
+  if quarto.doc.is_format("html") then
+    local customCSS = generateCustomCSS(quarto.doc.is_format("revealjs"))
     if customCSS ~= "" then
       quarto.doc.include_text('in-header', '<style>\n' .. customCSS .. '</style>')
     end
-    -- Load FontAwesome font dependency (HTML only)
-    for _, callout in pairs(customCallouts) do
-      if callout.icon_symbol and isFontAwesomeIcon(pandoc.utils.stringify(callout.icon_symbol)) then
-        ensureFontAwesomeDeps()
-        break
-      end
-    end
-  elseif quarto.doc.is_format("pdf") then
-    local pdfStyles = generatePdfStyles()
-    if pdfStyles ~= "" then
-      quarto.doc.include_text('in-header', pdfStyles)
-    end
-  elseif quarto.doc.is_format("typst") then
-    local typstStyles = generateTypstStyles()
-    if typstStyles ~= "" then
-      quarto.doc.include_text('in-header', typstStyles)
+    if needsFontAwesome then
+      ensureFontAwesomeDeps()
     end
   end
-
 end
-
-
--- Quarto's callout cross-reference prefixes, as in #nte-my-note
-local calloutCrossrefTypes = { nte = true, wrn = true, cau = true, tip = true, imp = true }
 
 ---Converts a div to a custom callout if it matches a defined custom callout
 ---@param div pandoc.Div The div to potentially convert
----@return pandoc.Div|quarto.Callout converted The converted callout or original div
+---@return pandoc.Block converted The converted callout or original div
 local function convertToCustomCallout(div)
-  -- Check if the div has classes
   for _, class in ipairs(div.classes) do
-    
-    -- Check if the class matches a custom callout
     local callout = customCallouts[class]
 
-    if callout then 
+    if callout then
       -- Use the default title if not provided
       local title = callout.title
 
@@ -322,7 +254,7 @@ local function convertToCustomCallout(div)
       -- Keep the div's id, other classes and attributes, minus this extension's options
       local attr = div.attr:clone()
       attr.classes = attr.classes:filter(function(c) return c ~= class end)
-      for _, option in ipairs({"title", "icon", "appearance", "collapse"}) do
+      for _, option in ipairs(OPTION_ATTRIBUTES) do
         attr.attributes[option] = nil
       end
 
@@ -340,42 +272,32 @@ local function convertToCustomCallout(div)
       -- Outside HTML, Quarto's callouts drop an ID that isn't a cross-reference ID,
       -- so the ID goes on a wrapping Div, which every writer turns into an anchor
       local id = attr.identifier
-      local prefix = id:match("^(%a+)%-")
-      local isCrossref = prefix ~= nil and calloutCrossrefTypes[prefix:lower()] ~= nil
+      local idPrefix = id:match("^(%a+)%-")
+      local isCrossref = idPrefix ~= nil and calloutCrossrefTypes[idPrefix:lower()] ~= nil
       if id ~= "" and not isCrossref and not quarto.doc.is_format("html") then
         attr.identifier = ""
         return pandoc.Div({ (quarto.Callout(calloutParams)) }, pandoc.Attr(id))
       end
 
-      return quarto.Callout(calloutParams)
+      return (quarto.Callout(calloutParams)) --[[@as pandoc.Block]]
     end
   end
-  
 
   return div
 end
 
----Walks the Pandoc document and processes divs to
----convert to custom callouts
----@class pandoc.Doc
----@field blocks pandoc.Blocks
----@param doc pandoc.Doc The Pandoc document
----@return pandoc.Doc doc The processed document
+---Walks the document body and converts divs to custom callouts
+---@param doc pandoc.Pandoc The Pandoc document
+---@return pandoc.Pandoc doc The processed document
 local function customCalloutFilter(doc)
-
-  -- Walk the AST and process divs
   doc.blocks = doc.blocks:walk({
     Div = convertToCustomCallout
-  })
-  
-  -- Return the modified document
+  }) --[[@as pandoc.Blocks]]
   return doc
 end
 
 -- Return the Pandoc filter
 return {
-  ---@type fun(meta: pandoc.Meta)
   Meta = parseCustomCallouts,
-  ---@type fun(doc: pandoc.Doc): pandoc.Doc
   Pandoc = customCalloutFilter
 }
