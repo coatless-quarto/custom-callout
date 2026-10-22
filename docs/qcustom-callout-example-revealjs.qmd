@@ -6,9 +6,9 @@ custom-callout:
   todo:
     icon-symbol: "📝"
     color: "pink"
-  jjb:
+  fixme:
     icon: true
-    title: "fix for JJB"
+    title: "Needs a fix"
     icon-symbol: "⚠️"
     color: "#FFA500"
   test:
@@ -39,7 +39,7 @@ Great job on completing this task!
 
 ## More Custom Callouts
 
-::: jjb
+::: fixme
 Please address this issue ...
 :::
 

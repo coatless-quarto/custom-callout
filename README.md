@@ -33,7 +33,7 @@ Here's a quick overview of the available YAML options:
 | Option | Description | Default | Possible Values | Example |
 |--------|-------------|---------|-----------------|---------|
 | `title` | Default title for the callout | Callout name | Any string | `title: "Important Note"` |
-| `icon` | Display an icon | `false` | `true`, `false` | `icon: true` |
+| `icon` | Display an icon | `true` | `true`, `false` | `icon: false` |
 | `icon-symbol` | Custom symbol or text for the icon | None | Any string, unicode, or [FontAwesome](https://fontawesome.com/search?o=r&m=free) class | `icon-symbol: "📝"` |
 | `color` | Color for the callout's left border and background | None | Any valid CSS color name or hex | `color: "#FFA500"` |
 | `appearance` | Callout appearance | `"default"` | `"default"`, `"simple"`, `"minimal"` | `appearance: "simple"` |
@@ -47,6 +47,10 @@ custom-callout:
   todo:
     icon-symbol: "📝"
     color: "pink"
+  test:
+    title: "Testing Note"
+    icon-symbol: "⚠️"
+    color: "#FFA500"
   thumbs-up:
     title: "Great job!"
     icon-symbol: "fa-thumbs-up"
