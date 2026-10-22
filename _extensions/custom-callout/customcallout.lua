@@ -16,6 +16,10 @@
 ---@type table<string, CustomCalloutDefinition>
 local customCallouts = {}
 
+-- Callout types in sorted order, so the generated styles are the same on every render
+---@type string[]
+local calloutTypes = {}
+
 local fa = require("fa")
 
 ---Converts a valid CSS color string or hexadecimal to RGBA format
@@ -94,7 +98,8 @@ local function generateCustomCSS(isRevealJS)
   local headerClass = isRevealJS and ".callout-title" or ".callout-header"
 
   -- Translate YAML callout information for custom callouts
-  for type, callout in pairs(customCallouts) do
+  for _, type in ipairs(calloutTypes) do
+    local callout = customCallouts[type]
     if callout.color then
       local color = pandoc.utils.stringify(callout.color)
 
@@ -149,7 +154,8 @@ end
 ---@return string latex The LaTeX color definitions
 local function generatePdfStyles()
   local latex = ""
-  for type, callout in pairs(customCallouts) do
+  for _, type in ipairs(calloutTypes) do
+    local callout = customCallouts[type]
     if callout.color then
       local hex = colorToHex(pandoc.utils.stringify(callout.color))
       if hex then
@@ -169,7 +175,8 @@ end
 ---@return string typst The Typst style definitions
 local function generateTypstStyles()
   local typst = ""
-  for type, callout in pairs(customCallouts) do
+  for _, type in ipairs(calloutTypes) do
+    local callout = customCallouts[type]
     if callout.color then
       local hex = colorToHex(pandoc.utils.stringify(callout.color))
       if hex then
@@ -202,8 +209,10 @@ local function parseCustomCallouts(meta)
         color = v.color or nil,
         background_color = v['background-color'] or nil
       }
+      table.insert(calloutTypes, k)
     end
   end
+  table.sort(calloutTypes)
 
 
   -- Detect format and inject appropriate styles
