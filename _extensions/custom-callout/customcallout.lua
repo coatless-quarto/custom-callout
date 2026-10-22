@@ -313,7 +313,8 @@ local function convertToCustomCallout(div)
       local title = callout.title
 
       -- Check to see if the title is specified in the div content
-      if div.content[1] ~= nil and div.content[1].t == "Header" then
+      -- (a title attribute wins, and the header then stays in the content)
+      if div.attributes.title == nil and div.content[1] ~= nil and div.content[1].t == "Header" then
         title = div.content[1]
         div.content:remove(1)
       end
