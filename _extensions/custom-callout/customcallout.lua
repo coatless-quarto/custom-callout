@@ -242,6 +242,19 @@ local function parseCustomCallouts(meta)
         background_color = v['background-color'] or nil
       }
       table.insert(calloutTypes, k)
+
+      -- An unknown FontAwesome name falls back to the default icon
+      local icon_symbol = customCallouts[k].icon_symbol
+      if icon_symbol then
+        local name = pandoc.utils.stringify(icon_symbol)
+        if isFontAwesomeIcon(name) and fa.fa_unicode(name) == nil then
+          quarto.log.warning(string.format(
+            "custom-callout: unknown FontAwesome icon '%s' for the '%s' callout; using the default icon",
+            name, k
+          ))
+          customCallouts[k].icon_symbol = nil
+        end
+      end
     end
   end
   table.sort(calloutTypes)
