@@ -86,6 +86,22 @@ local function isFontAwesomeIcon(icon)
   return icon ~= nil and icon:sub(1, 3) == "fa-"
 end
 
+---Reads a YAML true/false option, also accepting the strings "true" and "false"
+---@param value any The metadata value
+---@return boolean|nil bool The boolean value, or nil if unset or not a boolean
+local function toBoolean(value)
+  if type(value) == "boolean" or value == nil then
+    return value
+  end
+  local str = pandoc.utils.stringify(value)
+  if str == "true" then
+    return true
+  elseif str == "false" then
+    return false
+  end
+  return nil
+end
+
 ---Generates CSS for all defined custom callouts
 ---@param isRevealJS boolean Whether the output format is RevealJS
 ---@return string css The generated CSS rules
@@ -202,7 +218,7 @@ local function parseCustomCallouts(meta)
       customCallouts[k] = {
         type = tostring(k),
         title = v.title or k:gsub("^%l", string.upper),
-        icon = v.icon == 'true' or nil,
+        icon = toBoolean(v.icon),
         appearance = v.appearance or nil,
         collapse = v.collapse or nil,
         icon_symbol = v['icon-symbol'] or nil,
