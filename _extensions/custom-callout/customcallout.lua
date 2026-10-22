@@ -22,15 +22,30 @@ local calloutTypes = {}
 
 local fa = require("fa")
 
+---Returns the digits of a hex color, expanding the short forms #RGB and #RGBA
+---@param color string The color string
+---@return string|nil digits The 6 or 8 hex digits without '#', or nil if not a hex color
+local function hexDigits(color)
+  local digits = color:match("^#(%x+)$")
+  if digits and (#digits == 3 or #digits == 4) then
+    digits = digits:gsub("%x", "%0%0")
+  end
+  if digits and (#digits == 6 or #digits == 8) then
+    return digits
+  end
+  return nil
+end
+
 ---Converts a valid CSS color string or hexadecimal to RGBA format
----@param color string The color in hex (#RRGGBB) or named format
+---@param color string The color in hex (#RGB, #RRGGBB) or named format
 ---@param alpha number The alpha value between 0 and 1
 ---@return string rgba The color in rgba() or rgb(from color) format
 local function colorToRgba(color, alpha)
-  if color:sub(1,1) == "#" then
-    local r = tonumber(color:sub(2,3), 16)
-    local g = tonumber(color:sub(4,5), 16)
-    local b = tonumber(color:sub(6,7), 16)
+  local digits = hexDigits(color)
+  if digits then
+    local r = tonumber(digits:sub(1,2), 16)
+    local g = tonumber(digits:sub(3,4), 16)
+    local b = tonumber(digits:sub(5,6), 16)
     return string.format("rgba(%d, %d, %d, %.2f)", r, g, b, alpha)
   else
     -- For named colors, we use the functional notation of rgba()
@@ -58,11 +73,12 @@ local cssNamedColors = {
 }
 
 ---Converts a color string to a 6-digit uppercase hex value (without #)
----@param color string The color in hex (#RRGGBB) or named CSS format
+---@param color string The color in hex (#RGB, #RRGGBB) or named CSS format
 ---@return string|nil hex The 6-digit hex string, or nil if conversion fails
 local function colorToHex(color)
   if color:sub(1, 1) == "#" then
-    return color:sub(2):upper()
+    local digits = hexDigits(color)
+    return digits and digits:sub(1, 6):upper()
   end
   return cssNamedColors[color:lower()]
 end
