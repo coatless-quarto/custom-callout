@@ -4,9 +4,9 @@ custom-callout:
   todo:
     icon-symbol: "📝"
     color: "pink"
-  jjb:
-    title: "fix for JJB"
-    icon-symbol: "⚠️"
+  bug:
+    title: "Bug Report"
+    icon: false
     color: "#FFA500"
 filters:
     - custom-callout
@@ -61,7 +61,7 @@ filters:
 For each custom callout, you can set the following options:
 
 - `title`: The default title for the callout (optional)
-- `icon`: Set to `"true"` to use an icon or `"false"` for no icon
+- `icon`: Set to `false` to hide the icon (optional; the icon shows by default)
 - `icon-symbol`: A custom symbol or text to use as the icon
 - `color`: The color for the callout. You can use any valid CSS color name or hex code.
 - `appearance`: The callout appearance (optional)
@@ -135,7 +135,7 @@ Please provide your feedback.
 :::
 ```
 
-This will display the [user](https://fontawesome.com/icons/user?f=classic&s=regular) icon in the callout.
+This will display the [user](https://fontawesome.com/icons/user?f=classic&s=solid) icon in the callout.
 
 You can find a list of available FontAwesome icons [here](https://fontawesome.com/search?o=r&m=free).
 
@@ -146,7 +146,7 @@ This CSS is included in the document's header, ensuring that your custom callout
 
 ## What if I want to change the appearance of all my custom callouts?
 
-You can modify the `generateCustomCSS` function in the `custom-callout.lua` file to change the default styling for all custom callouts.
+You can modify the `generateCustomCSS` function in the `customcallout.lua` file to change the default styling for all custom callouts.
 However, be careful when making changes to the Lua script, as it may affect the functionality of the extension.
 Alternatively, you can add custom CSS to your document to override the default styles.
 

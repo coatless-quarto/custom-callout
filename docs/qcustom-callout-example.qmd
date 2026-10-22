@@ -6,9 +6,9 @@ custom-callout:
   todo:
     icon-symbol: "📝"
     color: "pink"
-  jjb:
+  fixme:
     icon: true
-    title: "fix for JJB"
+    title: "Needs a fix"
     icon-symbol: "⚠️"
     color: "#FFA500"
   test:
@@ -38,9 +38,9 @@ custom-callout:
   todo:
     icon-symbol: "📝"
     color: "pink"
-  jjb:
+  fixme:
     icon: true
-    title: "fix for JJB"
+    title: "Needs a fix"
     icon-symbol: "⚠️"
     color: "#FFA500"
   test:
@@ -71,7 +71,7 @@ The following examples demonstrate the use of custom callouts in Quarto document
 Hello there!
 :::
 
-::: jjb
+::: fixme
 Please address this issue ... 
 :::
 
@@ -89,7 +89,7 @@ Hey, a [FontAwesome](https://fontawesome.com/) icon!
 Hello there!
 :::
 
-::: jjb
+::: fixme
 Please address this issue ... 
 :::
 
