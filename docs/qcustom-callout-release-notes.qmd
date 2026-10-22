@@ -28,22 +28,11 @@ Hello there!
 
 - Added Lua type definitions for the `custom-callout` filter.
 
-## Documentation
-
-- The README, home page and FAQ now give the default of `icon` as `true` and describe it as a boolean (`icon: false`), not the string `"true"`.
-- The README and FAQ examples now define every callout they use. Previously, `::: test` in the README and `::: bug` in the FAQ rendered as plain divs.
-- The FAQ now names the filter file `customcallout.lua`.
-
 ## Bugfixes
 
-- `icon: false` in a callout definition now hides the icon. Previously, the option was ignored and every custom callout showed an icon.
-- custom-callout now keeps the id, classes and attributes of the div, so a callout such as `{#my-anchor .todo .column-margin}` can be linked to in HTML, PDF, Typst and Word, and its classes apply. Previously, all of them were dropped, and a link to the callout broke Typst builds.
-- `color` accepts 3-digit hex colors such as `"#F00"`. Previously, they stopped HTML renders with "bad argument #4 to 'format'", and 3- or 8-digit hex colors broke PDF builds.
-- `icon-symbol` shows FontAwesome brand icons such as `fa-github` and `fa-orcid`, using the bundled FontAwesome Free brands font. Previously, brand icons showed a missing-glyph box.
-- `icon-symbol` with an unknown FontAwesome name now gives a warning and uses the default icon. Previously, the callout header showed the letters "NIL".
-- `icon-symbol` now works without `color`. Previously, a definition without `color` showed no icon.
-- The `title` attribute no longer drops a leading header: when a callout has both, the header stays in the callout body, as in Quarto's own callouts.
-- custom-callout now writes its styles in the same order on every render, so re-rendering an unchanged document gives the same HTML.
+- `icon: false` hides a callout's icon, and `icon-symbol` supports FontAwesome brand icons such as `fa-github`.
+- Callouts keep their id, classes and attributes, so you can link to them and place them in the margin.
+- `color` accepts 3-digit hex colors such as `"#F00"`.
 - Fixed FontAwesome icons rendering as placeholder characters by bundling FA 7 Free Solid font (woff2) and registering it as an HTML dependency.
 - Fixed icons appearing in italics. ([#5](https://github.com/coatless-quarto/custom-callout/issues/5), thanks [@jtkulas](https://github.com/jtkulas))
 
