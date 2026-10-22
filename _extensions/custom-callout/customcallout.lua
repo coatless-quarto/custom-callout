@@ -260,6 +260,9 @@ local function parseCustomCallouts(meta)
 end
 
 
+-- Quarto's callout cross-reference prefixes, as in #nte-my-note
+local calloutCrossrefTypes = { nte = true, wrn = true, cau = true, tip = true, imp = true }
+
 ---Converts a div to a custom callout if it matches a defined custom callout
 ---@param div pandoc.Div The div to potentially convert
 ---@return pandoc.Div|quarto.Callout converted The converted callout or original div
@@ -280,6 +283,13 @@ local function convertToCustomCallout(div)
         div.content:remove(1)
       end
 
+      -- Keep the div's id, other classes and attributes, minus this extension's options
+      local attr = div.attr:clone()
+      attr.classes = attr.classes:filter(function(c) return c ~= class end)
+      for _, option in ipairs({"title", "icon", "appearance", "collapse"}) do
+        attr.attributes[option] = nil
+      end
+
       -- Create a new Callout with the custom callout parameters
       local calloutParams = {
         type = callout.type,
@@ -287,9 +297,20 @@ local function convertToCustomCallout(div)
         title = div.attributes.title or title,
         icon = div.attributes.icon or callout.icon,
         appearance = div.attributes.appearance or callout.appearance,
-        collapse = div.attributes.collapse or callout.collapse
+        collapse = div.attributes.collapse or callout.collapse,
+        attr = attr
       }
-      
+
+      -- Outside HTML, Quarto's callouts drop an ID that isn't a cross-reference ID,
+      -- so the ID goes on a wrapping Div, which every writer turns into an anchor
+      local id = attr.identifier
+      local prefix = id:match("^(%a+)%-")
+      local isCrossref = prefix ~= nil and calloutCrossrefTypes[prefix:lower()] ~= nil
+      if id ~= "" and not isCrossref and not quarto.doc.is_format("html") then
+        attr.identifier = ""
+        return pandoc.Div({ (quarto.Callout(calloutParams)) }, pandoc.Attr(id))
+      end
+
       return quarto.Callout(calloutParams)
     end
   end
