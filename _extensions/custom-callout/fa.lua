@@ -1,3 +1,4 @@
+-- Icons in the solid font (fa-solid-900.woff2)
 local fa_icons = {
   ["fa-0"] = "\\30",
   ["fa-1"] = "\\31",
@@ -1999,6 +2000,10 @@ local fa_icons = {
   ["fa-record-vinyl"] = "\\f8d9",
   ["fa-walkie-talkie"] = "\\f8ef",
   ["fa-caravan"] = "\\f8ff",
+}
+
+-- Icons in the brands font (fa-brands-400.woff2)
+local fa_brand_icons = {
   ["fa-firefox-browser"] = "\\e007",
   ["fa-ideal"] = "\\e013",
   ["fa-microblog"] = "\\e01a",
@@ -2584,11 +2589,21 @@ local fa_icons = {
   ["fa-umbraco"] = "\\f8e8",
 }
 
--- Function to get Unicode value for a FontAwesome icon name
+---Gets the CSS Unicode escape for a FontAwesome icon name
+---@param icon_name string The icon class, such as "fa-thumbs-up"
+---@return string|nil unicode The escape, or nil if the icon is unknown
 local function fa_unicode(icon_name)
-  return fa_icons[icon_name] or nil
+  return fa_icons[icon_name] or fa_brand_icons[icon_name]
+end
+
+---Checks whether a FontAwesome icon is in the brands font
+---@param icon_name string The icon class, such as "fa-github"
+---@return boolean is_brand True if the icon needs the brands font
+local function fa_is_brand(icon_name)
+  return fa_brand_icons[icon_name] ~= nil
 end
 
 return {
-  fa_unicode = fa_unicode
+  fa_unicode = fa_unicode,
+  fa_is_brand = fa_is_brand
 }

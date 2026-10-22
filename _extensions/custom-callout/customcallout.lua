@@ -83,14 +83,15 @@ local function colorToHex(color)
   return cssNamedColors[color:lower()]
 end
 
----Adds HTML dependency for bundled FontAwesome 7 Free Solid font
+---Adds HTML dependency for the bundled FontAwesome 7 Free Solid and Brands fonts
 local function ensureFontAwesomeDeps()
   quarto.doc.add_html_dependency({
     name = "fontawesome-7-free",
     version = "7.2.0",
     stylesheets = {"assets/css/fontawesome.css"},
     resources = {
-      { name = "fa-solid-900.woff2", path = "assets/webfonts/fa-solid-900.woff2" }
+      { name = "fa-solid-900.woff2", path = "assets/webfonts/fa-solid-900.woff2" },
+      { name = "fa-brands-400.woff2", path = "assets/webfonts/fa-brands-400.woff2" }
     }
   })
 end
@@ -159,9 +160,14 @@ local function generateCustomCSS(isRevealJS)
       if callout.icon_symbol then
         local icon_symbol_str = pandoc.utils.stringify(callout.icon_symbol)
         if isFontAwesomeIcon(icon_symbol_str) then
-          -- Font Awesome icon
-          css = css .. "  font-family: 'Font Awesome 7 Free';\n"
-          css = css .. "  font-weight: 900;\n"
+          -- Font Awesome icon, from the brands font for brand logos
+          if fa.fa_is_brand(icon_symbol_str) then
+            css = css .. "  font-family: 'Font Awesome 7 Brands';\n"
+            css = css .. "  font-weight: 400;\n"
+          else
+            css = css .. "  font-family: 'Font Awesome 7 Free';\n"
+            css = css .. "  font-weight: 900;\n"
+          end
           css = css .. "  font-style: normal;\n"
           css = css .. string.format("  content: '%s' !important;\n", fa.fa_unicode(icon_symbol_str))
         else

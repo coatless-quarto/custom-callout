@@ -46,22 +46,51 @@ fa_data$lua_unicode <- sapply(fa_data$raw_value, function(val) {
 # Remove duplicates (keep first occurrence)
 fa_data <- fa_data[!duplicated(fa_data$class), ]
 
-# Generate Lua table
-lua_table <- paste0('  ["', fa_data$class, '"] = ', fa_data$lua_unicode, ",\n", collapse = "")
+# Brand icons are in a separate font (fa-brands-400.woff2) and are defined in
+# brands.css. A few names there are also in the core set (fontawesome.css),
+# which the solid font covers, so those stay with the solid icons.
+css_classes <- function(url) {
+  css <- paste(readLines(url), collapse = "\n")
+  str_match_all(css, "\\.(fa-[\\w-]+)\\s*\\{\\s*--fa:")[[1]][, 2]
+}
+brand_classes <- setdiff(
+  css_classes("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/brands.css"),
+  css_classes("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/fontawesome.css")
+)
+fa_data$brand <- fa_data$class %in% brand_classes
+
+# Generate Lua tables
+lua_table <- function(rows) {
+  paste0('  ["', rows$class, '"] = ', rows$lua_unicode, ",\n", collapse = "")
+}
 
 lua_accessor <- paste0(
-  "-- Function to get Unicode value for a FontAwesome icon name\n",
+  "---Gets the CSS Unicode escape for a FontAwesome icon name\n",
+  "---@param icon_name string The icon class, such as \"fa-thumbs-up\"\n",
+  "---@return string|nil unicode The escape, or nil if the icon is unknown\n",
   "local function fa_unicode(icon_name)\n",
-  "  return fa_icons[icon_name] or nil\n",
+  "  return fa_icons[icon_name] or fa_brand_icons[icon_name]\n",
+  "end\n\n",
+  "---Checks whether a FontAwesome icon is in the brands font\n",
+  "---@param icon_name string The icon class, such as \"fa-github\"\n",
+  "---@return boolean is_brand True if the icon needs the brands font\n",
+  "local function fa_is_brand(icon_name)\n",
+  "  return fa_brand_icons[icon_name] ~= nil\n",
   "end\n\n",
   "return {\n",
-  "  fa_unicode = fa_unicode\n",
+  "  fa_unicode = fa_unicode,\n",
+  "  fa_is_brand = fa_is_brand\n",
   "}\n"
 )
 
 cat(
+    "-- Icons in the solid font (fa-solid-900.woff2)\n",
     "local fa_icons = {\n",
-    lua_table,
+    lua_table(fa_data[!fa_data$brand, ]),
+    "}\n\n",
+    "-- Icons in the brands font (fa-brands-400.woff2)\n",
+    "local fa_brand_icons = {\n",
+    lua_table(fa_data[fa_data$brand, ]),
     "}\n\n",
     file = "_extensions/custom-callout/fa.lua",
     sep = ""
@@ -74,4 +103,4 @@ cat(
     append = TRUE
 )
 
-print(sprintf("Lua table has been generated with %d icons and saved to 'fa.lua'", nrow(fa_data)))
+print(sprintf("Lua tables have been generated with %d icons (%d brands) and saved to 'fa.lua'", nrow(fa_data), sum(fa_data$brand)))
