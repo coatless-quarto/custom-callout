@@ -21,6 +21,8 @@ website:
         file: qcustom-callout-example.qmd
       - text: "RevealJS"
         file: qcustom-callout-revealjs.qmd
+      - text: "PDF, Typst and EPUB"
+        file: qcustom-callout-formats.qmd
       - section: "Support"
         contents:
         - text: "FAQ"
