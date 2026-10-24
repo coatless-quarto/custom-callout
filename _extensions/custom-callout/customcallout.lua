@@ -245,9 +245,13 @@ local function convertToCustomCallout(div)
       local title = callout.title
 
       -- Check to see if the title is specified in the div content
-      -- (a title attribute wins, and the header then stays in the content)
-      if div.attributes.title == nil and div.content[1] ~= nil and div.content[1].t == "Header" then
-        title = div.content[1]
+      -- (a title attribute wins, and the header then stays in the content).
+      -- The title is the header's text, as in Quarto's own callouts; the
+      -- Header itself would become a real section heading in PDF and Typst
+      local first = div.content[1]
+      if div.attributes.title == nil and first ~= nil and first.t == "Header" then
+        ---@cast first pandoc.Header
+        title = first.content
         div.content:remove(1)
       end
 
