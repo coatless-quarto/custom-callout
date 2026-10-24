@@ -43,6 +43,9 @@ local DEFAULT_ICON = "url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/200
 -- Quarto's callout cross-reference prefixes, as in #nte-my-note
 local calloutCrossrefTypes = { nte = true, wrn = true, cau = true, tip = true, imp = true }
 
+-- The alert types GitHub recognizes, as in > [!NOTE]
+local githubAlertTypes = { note = true, tip = true, important = true, warning = true, caution = true }
+
 -- Div attributes that set this extension's options, so they aren't passed on to the callout
 local OPTION_ATTRIBUTES = { "title", "icon", "appearance", "collapse" }
 
@@ -516,6 +519,12 @@ local function convertToCustomCallout(div)
         collapse = div.attributes.collapse or callout.collapse,
         attr = attr
       }
+
+      -- GitHub Markdown shows an alert type it doesn't know as plain text, so
+      -- other types become a note, which keeps the callout's title
+      if quarto.doc.is_format("gfm") and not githubAlertTypes[callout.type] then
+        calloutParams.type = "note"
+      end
 
       -- Outside HTML, Quarto's callouts drop an ID that isn't a cross-reference ID,
       -- so the ID goes on a wrapping Div, which every writer turns into an anchor
