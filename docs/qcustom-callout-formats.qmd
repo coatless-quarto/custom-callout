@@ -1,0 +1,107 @@
+---
+title: "PDF, Typst and EPUB"
+custom-callout:
+  todo:
+    title: "To do"
+    icon-symbol: "fa-pen-to-square"
+    color: "pink"
+  thumbs-up:
+    title: "Great job!"
+    icon-symbol: "fa-thumbs-up"
+    color: "#008000"
+  test:
+    title: "Test feature"
+    color: "#801410"
+format:
+  html:
+    toc: true
+  pdf: default
+  typst:
+    output-file: qcustom-callout-formats-typst.pdf
+  epub:
+    custom-callout:
+      todo:
+        icon-symbol: "📝"
+      thumbs-up:
+        icon-symbol: "👍"
+filters:
+  - custom-callout
+---
+
+Custom callouts keep their colors and icons in PDF, Typst and EPUB output, not just in HTML and RevealJS.
+
+::: {.content-visible when-format="html:js"}
+This page is also rendered to each of those formats: use the links under **Other Formats** to download it as a PDF, a Typst PDF or an EPUB, and compare its callouts with the ones below.
+:::
+
+## Examples
+
+::: todo
+Draft the summary.
+:::
+
+::: thumbs-up
+A [FontAwesome](https://fontawesome.com/) icon.
+:::
+
+::: test
+A colored callout without an `icon-symbol` shows a warning triangle in its color.
+:::
+
+::: todo
+## A heading as the title
+
+A heading at the top of a callout becomes its title in every format.
+:::
+
+## What each format supports
+
+| Format | `color` | FontAwesome icons | Emoji and other symbols |
+|--------|---------|-------------------|-------------------------|
+| HTML and RevealJS | Yes | Yes | Yes |
+| PDF | Yes | Yes, from Font Awesome 5 | Plain ASCII text only |
+| Typst | Yes | Yes, from Font Awesome 6 | Yes, when a font has them |
+| EPUB | Yes | No | Yes |
+
+- **Colors.** Hex colors, CSS color names such as `"pink"`, and `rgb()` colors work in every format. Other CSS colors, such as `hsl()`, work in HTML and RevealJS. Elsewhere the callout keeps Quarto's default color, and the render log has a warning.
+- **Icons that can't be shown.** When a format can't show an icon, a colored callout shows the warning triangle instead, and the render log has a warning.
+- **PDF** uses the `fontawesome5` LaTeX package, which has the Font Awesome 5 icons. An icon is found under any of its names, so `fa-house` shows Font Awesome 5's `home` icon. An icon added after Font Awesome 5 shows the warning triangle.
+- **EPUB** can't show FontAwesome icons, because they need the Font Awesome fonts, which an extension can't add to an EPUB.
+- **GitHub Markdown** (`format: gfm`) has only five alert types, so a custom callout becomes a `> [!NOTE]` alert with the callout's title.
+- **Word** output shows custom callouts with Quarto's default styling.
+
+## Different icons for each format
+
+Settings under a format replace the ones at the top level for that format only. This page uses Font Awesome icons, which EPUB can't show, so its EPUB version uses emoji instead:
+
+```yaml
+---
+title: "PDF, Typst and EPUB"
+custom-callout:
+  todo:
+    title: "To do"
+    icon-symbol: "fa-pen-to-square"
+    color: "pink"
+  thumbs-up:
+    title: "Great job!"
+    icon-symbol: "fa-thumbs-up"
+    color: "#008000"
+  test:
+    title: "Test feature"
+    color: "#801410"
+format:
+  html:
+    toc: true
+  pdf: default
+  typst:
+    output-file: qcustom-callout-formats-typst.pdf
+  epub:
+    custom-callout:
+      todo:
+        icon-symbol: "📝"
+      thumbs-up:
+        icon-symbol: "👍"
+filters:
+  - custom-callout
+---
+```

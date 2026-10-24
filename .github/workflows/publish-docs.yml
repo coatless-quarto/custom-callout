@@ -26,6 +26,8 @@ jobs:
           uses: quarto-dev/quarto-actions/setup@v2
           with:
             version: "pre-release"
+            # The PDF version of the PDF, Typst and EPUB page needs LaTeX
+            tinytex: true
 
         # Render the Quarto file
         - name: "Render working directory"

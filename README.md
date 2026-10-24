@@ -6,8 +6,9 @@ appearance, and collapsibility.
 
 > [!IMPORTANT]
 >
-> This extension supports Quarto HTML documents and RevealJS presentations.
-> We hope to extend this to other formats in the future.
+> This extension supports Quarto HTML documents and RevealJS presentations,
+> and PDF, Typst and EPUB output. See [Other formats](#other-formats) for
+> what each format shows.
 
 ## Installing
 
@@ -81,6 +82,38 @@ one with a pink border and a "📝" icon, an orange
 border and a "⚠️" icon, and a green border with a thumbs-up icon from 
 [FontAwesome](https://fontawesome.com/search?o=r&m=free).
 
+
+## Other formats
+
+Custom callouts keep their color and icon in PDF, Typst and EPUB output:
+
+| Format | `color` | FontAwesome icons | Emoji and other symbols |
+|--------|---------|-------------------|-------------------------|
+| HTML and RevealJS | Yes | Yes | Yes |
+| PDF | Yes | Yes, from Font Awesome 5 | Plain ASCII text only |
+| Typst | Yes | Yes, from Font Awesome 6 | Yes, when a font has them |
+| EPUB | Yes | No | Yes |
+
+- Hex colors, CSS color names and `rgb()` colors work in every format. Other CSS colors, such as `hsl()`, keep Quarto's default color outside HTML.
+- When a format can't show an icon, a colored callout shows a warning triangle instead, and the render log has a warning. In PDF, an icon added after Font Awesome 5 shows the triangle.
+- In GitHub Markdown, a custom callout becomes a `> [!NOTE]` alert with its title. Word output uses Quarto's default callout styling.
+
+To use a different icon in one format, set it under that format:
+
+```yaml
+custom-callout:
+  thumbs-up:
+    icon-symbol: "fa-thumbs-up"
+    color: "#008000"
+format:
+  html: default
+  epub:
+    custom-callout:
+      thumbs-up:
+        icon-symbol: "👍"
+filters:
+- custom-callout
+```
 
 ## Notes
 
