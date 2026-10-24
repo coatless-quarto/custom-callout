@@ -21,7 +21,18 @@ local calloutTypes = {}
 -- Whether any callout uses a FontAwesome icon
 local needsFontAwesome = false
 
+---Raw code placed before and after each callout of a type, outside HTML
+---@class CustomCallout.Wrapper
+---@field format string The raw format, such as "latex"
+---@field open string Code before the callout
+---@field close string Code after the callout
+
+-- Wrappers that give each custom callout type its color and icon, by type
+---@type table<string, CustomCallout.Wrapper>
+local calloutWrappers = {}
+
 local fa = require("fa")
+local colors = require("colors")
 
 -- Chevron for the collapse toggle
 local CHEVRON_ICON = "url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"rgb(33, 37, 41)\" class=\"bi bi-chevron-down\" viewBox=\"0 0 16 16\"><path fill-rule=\"evenodd\" d=\"M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\"/></svg>')"
@@ -64,6 +75,28 @@ local function colorToRgba(color, alpha)
     -- For named colors, we use the functional notation of rgba()
     return string.format("rgb(from %s r g b / %.0f%%)", color, alpha * 100)
   end
+end
+
+---Converts a color to hex digits for formats other than HTML: hex colors
+---(without their alpha channel), CSS color names, and rgb() or rgba() with
+---values from 0 to 255
+---@param color string The color string
+---@return string|nil hex Six hex digits without '#', or nil for other CSS colors
+local function colorHex(color)
+  local digits = hexDigits(color)
+  if digits then
+    return digits:sub(1, 6):upper()
+  end
+  local named = colors.css_color_hex(color)
+  if named then
+    return named
+  end
+  local r, g, b = color:match("^rgba?%(%s*(%d+)[%s,]+(%d+)[%s,]+(%d+)%s*[,/)]")
+  if r then
+    return string.format("%02X%02X%02X",
+      math.min(tonumber(r) or 0, 255), math.min(tonumber(g) or 0, 255), math.min(tonumber(b) or 0, 255))
+  end
+  return nil
 end
 
 ---Adds HTML dependency for the bundled FontAwesome 7 Free Solid and Brands fonts
@@ -177,6 +210,112 @@ local function generateCustomCSS(isRevealJS)
   return table.concat(css)
 end
 
+---Warns that a callout's color or icon symbol can't be used in an output format
+---@param format string The format's name, such as "PDF"
+---@param what string "color" or "icon symbol"
+---@param value string The color or icon symbol
+---@param callout CustomCallout.Definition The callout definition
+---@param fallback string What is used instead
+local function warnUnsupported(format, what, value, callout, fallback)
+  quarto.log.warning(string.format(
+    "custom-callout: %s output can't use the %s '%s' for the '%s' callout; using %s",
+    format, what, value, callout.type, fallback
+  ))
+end
+
+-- PDF output. Quarto draws callouts with tcolorbox and colors them with
+-- per-type LaTeX colors, which unknown types share: quarto-callout-color and
+-- quarto-callout-color-frame, with the \faInfo icon from the fontawesome5
+-- package (callout_attrs in Quarto's share/filters/modules/callouts.lua). A
+-- custom callout redefines those inside a group, so the change ends with the
+-- callout.
+
+-- Icon commands of Quarto's own callout types, which also have their own color names
+local LATEX_TYPE_ICONS = {
+  note = "faInfo",
+  warning = "faExclamationTriangle",
+  important = "faExclamation",
+  caution = "faFire",
+  tip = "faLightbulb"
+}
+
+---Gets the fontawesome5 command for a FontAwesome icon class: "fa-thumbs-up" becomes "faThumbsUp"
+---@param class string The icon class
+---@return string command The command name, without the backslash
+local function latexIconCommand(class)
+  local words = class:sub(4):gsub("%-(%w)", string.upper)
+  return "fa" .. words:gsub("^%l", string.upper)
+end
+
+---Generates the LaTeX for a callout's icon. fontawesome5 has Font Awesome 5
+---icons, so a FontAwesome icon tries each of its names, which include its
+---Font Awesome 5 name, and falls back to the default icon
+---@param callout CustomCallout.Definition The callout definition
+---@return string|nil latex The icon, or nil to keep Quarto's icon
+local function latexIcon(callout)
+  -- The default icon, as in HTML: a warning triangle for a colored callout,
+  -- or else Quarto's icon, saved as \customcalloutquartoicon
+  local default = callout.color and "\\faExclamationTriangle" or "\\customcalloutquartoicon"
+  local symbol = callout.icon_symbol
+
+  if isFontAwesomeIcon(symbol) then
+    ---@cast symbol string
+    local latex, closing = "", ""
+    for _, class in ipairs(fa.fa_aliases(symbol)) do
+      local command = latexIconCommand(class)
+      -- fontawesome5's \faH takes an argument, so calling it here would break
+      if command ~= "faH" then
+        latex = latex .. "\\ifcsname " .. command .. "\\endcsname\\" .. command .. "\\else"
+        closing = closing .. "\\fi"
+      end
+    end
+    return latex .. default .. closing
+  elseif symbol then
+    -- LaTeX's default fonts only have the ASCII characters for sure
+    if symbol:match("^[\32-\126]+$") then
+      return (pandoc.write(pandoc.Pandoc({ pandoc.Plain({ pandoc.Str(symbol) }) }), "latex"):gsub("%s+$", ""))
+    end
+    warnUnsupported("PDF", "icon symbol", symbol, callout, "the default icon")
+    return callout.color and default or nil
+  elseif callout.color then
+    return default
+  end
+  return nil
+end
+
+---Generates the LaTeX wrapper that gives a callout its color and icon
+---@param callout CustomCallout.Definition The callout definition
+---@return CustomCallout.Wrapper|nil wrapper The wrapper, or nil if Quarto's styling is kept
+local function latexWrapper(callout)
+  local isQuartoType = LATEX_TYPE_ICONS[callout.type] ~= nil
+  local colorName = isQuartoType and ("quarto-callout-" .. callout.type .. "-color") or "quarto-callout-color"
+  local iconCommand = LATEX_TYPE_ICONS[callout.type] or "faInfo"
+  ---@type string[]
+  local lines = {}
+
+  if callout.color then
+    local hex = colorHex(callout.color)
+    if hex then
+      lines[#lines + 1] = string.format("\\definecolor{%s}{HTML}{%s}", colorName, hex)
+      lines[#lines + 1] = string.format("\\definecolor{%s-frame}{HTML}{%s}", colorName, hex)
+    else
+      warnUnsupported("PDF", "color", callout.color, callout, "the default color")
+    end
+  end
+
+  -- The icon is set even with icon: false, which a callout can override
+  local icon = latexIcon(callout)
+  if icon then
+    lines[#lines + 1] = "\\let\\customcalloutquartoicon\\" .. iconCommand
+    lines[#lines + 1] = "\\protected\\def\\" .. iconCommand .. "{" .. icon .. "}"
+  end
+
+  if #lines == 0 then
+    return nil
+  end
+  return { format = "latex", open = "\\begingroup\n" .. table.concat(lines, "\n"), close = "\\endgroup" }
+end
+
 ---Reads one custom callout definition from its metadata
 ---@param key string The callout type (its key under `custom-callout`)
 ---@param options table The callout's metadata map
@@ -220,8 +359,9 @@ local function parseCustomCallouts(meta)
   end
   table.sort(calloutTypes)
 
-  -- Styles only apply to HTML and RevealJS. Other formats use Quarto's styling
-  -- for unknown callout types, which can't be changed per type.
+  -- HTML and RevealJS get a stylesheet. PDF wraps each callout in code that
+  -- sets its color and icon. Other formats use Quarto's styling for unknown
+  -- callout types.
   if quarto.doc.is_format("html") then
     local customCSS = generateCustomCSS(quarto.doc.is_format("revealjs"))
     if customCSS ~= "" then
@@ -230,12 +370,32 @@ local function parseCustomCallouts(meta)
     if needsFontAwesome then
       ensureFontAwesomeDeps()
     end
+  elseif quarto.doc.is_format("latex") then
+    for _, type in ipairs(calloutTypes) do
+      calloutWrappers[type] = latexWrapper(customCallouts[type])
+    end
   end
+end
+
+---Puts a callout between its type's wrapper code, if it has one
+---@param type string The callout type
+---@param block pandoc.Block The callout
+---@return pandoc.Block|pandoc.Blocks blocks The callout with its wrapper code
+local function wrapCallout(type, block)
+  local wrapper = calloutWrappers[type]
+  if wrapper == nil then
+    return block
+  end
+  return pandoc.Blocks({
+    pandoc.RawBlock(wrapper.format, wrapper.open),
+    block,
+    pandoc.RawBlock(wrapper.format, wrapper.close)
+  })
 end
 
 ---Converts a div to a custom callout if it matches a defined custom callout
 ---@param div pandoc.Div The div to potentially convert
----@return pandoc.Block converted The converted callout or original div
+---@return pandoc.Block|pandoc.Blocks converted The converted callout or original div
 local function convertToCustomCallout(div)
   for _, class in ipairs(div.classes) do
     local callout = customCallouts[class]
@@ -280,10 +440,10 @@ local function convertToCustomCallout(div)
       local isCrossref = idPrefix ~= nil and calloutCrossrefTypes[idPrefix:lower()] ~= nil
       if id ~= "" and not isCrossref and not quarto.doc.is_format("html") then
         attr.identifier = ""
-        return pandoc.Div({ (quarto.Callout(calloutParams)) }, pandoc.Attr(id))
+        return wrapCallout(callout.type, pandoc.Div({ (quarto.Callout(calloutParams)) }, pandoc.Attr(id)))
       end
 
-      return (quarto.Callout(calloutParams)) --[[@as pandoc.Block]]
+      return wrapCallout(callout.type, (quarto.Callout(calloutParams)) --[[@as pandoc.Block]])
     end
   end
 
