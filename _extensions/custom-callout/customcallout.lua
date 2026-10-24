@@ -37,8 +37,10 @@ local colors = require("colors")
 -- Chevron for the collapse toggle
 local CHEVRON_ICON = "url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"rgb(33, 37, 41)\" class=\"bi bi-chevron-down\" viewBox=\"0 0 16 16\"><path fill-rule=\"evenodd\" d=\"M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z\"/></svg>')"
 
--- Default icon, a warning triangle; %s is the fill color with '#' escaped as %23
-local DEFAULT_ICON = "url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"%s\" class=\"bi bi-exclamation-triangle\" viewBox=\"0 0 16 16\"><path d=\"M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z\"/></svg>')"
+-- Default icon, a warning triangle; %s is the fill color (with '#' escaped as
+-- %23 in the stylesheet)
+local DEFAULT_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%s" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>'
+local DEFAULT_ICON = "url('data:image/svg+xml," .. DEFAULT_ICON_SVG .. "')"
 
 -- Quarto's callout cross-reference prefixes, as in #nte-my-note
 local calloutCrossrefTypes = { nte = true, wrn = true, cau = true, tip = true, imp = true }
@@ -399,6 +401,70 @@ local function typstWrapper(callout)
   }
 end
 
+-- EPUB output. Quarto doesn't put a filter's stylesheet or HTML dependencies
+-- into an EPUB, so a custom callout carries its styles in attributes, which
+-- customcallout-epub.lua turns into inline styles once Quarto has rendered
+-- the callout. Without the Font Awesome fonts, FontAwesome icons can't show.
+
+---EPUB styles for one callout type
+---@class CustomCallout.EpubStyles
+---@field border string|nil The left border color
+---@field title string|nil The title background color
+---@field icon string|nil HTML for the icon
+
+-- Attributes that carry a callout's EPUB styles to customcallout-epub.lua,
+-- as {style field, attribute name}
+local EPUB_ATTRIBUTES = {
+  { "border", "custom-callout-border" },
+  { "title", "custom-callout-title-background" },
+  { "icon", "custom-callout-icon" }
+}
+
+-- EPUB styles by callout type
+---@type table<string, CustomCallout.EpubStyles>
+local epubStyles = {}
+
+---Generates the EPUB styles of a callout
+---@param callout CustomCallout.Definition The callout definition
+---@return CustomCallout.EpubStyles|nil styles The styles, or nil if Quarto's styling is kept
+local function epubCalloutStyles(callout)
+  ---@type CustomCallout.EpubStyles
+  local styles = {}
+  local hex = callout.color and colorHex(callout.color)
+  if hex then
+    styles.border = "#" .. hex
+    -- The title background is the color at 13%, as in HTML (the default appearance only)
+    if callout.appearance == nil or callout.appearance == "default" then
+      styles.title = colorToRgba("#" .. hex, 0.13)
+    end
+  elseif callout.color then
+    warnUnsupported("EPUB", "color", callout.color, callout, "the default color")
+  end
+
+  -- The icon sits where Quarto's icon would, with the same spacing
+  local iconStyle = "display: inline-block; margin-top: 0.5rem; padding-right: 0.5rem; font-style: normal;"
+  local triangle = '<span style="' .. iconStyle .. '">'
+    .. DEFAULT_ICON_SVG:format(hex and ("#" .. hex) or "#909090")
+      :gsub("^<svg ", '<svg style="width: 0.9rem; height: 0.9rem;" ')
+    .. "</span>"
+  local symbol = callout.icon_symbol
+  if isFontAwesomeIcon(symbol) then
+    ---@cast symbol string
+    warnUnsupported("EPUB", "icon symbol", symbol, callout, "the default icon")
+    styles.icon = callout.color and triangle or nil
+  elseif symbol then
+    local text = symbol:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;")
+    styles.icon = '<span style="' .. iconStyle .. '">' .. text .. "</span>"
+  elseif callout.color then
+    styles.icon = triangle
+  end
+
+  if next(styles) == nil then
+    return nil
+  end
+  return styles
+end
+
 ---Reads one custom callout definition from its metadata
 ---@param key string The callout type (its key under `custom-callout`)
 ---@param options table The callout's metadata map
@@ -443,9 +509,13 @@ local function parseCustomCallouts(meta)
   table.sort(calloutTypes)
 
   -- HTML and RevealJS get a stylesheet. PDF and Typst wrap each callout in
-  -- code that sets its color and icon. Other formats use Quarto's styling for
-  -- unknown callout types.
-  if quarto.doc.is_format("html") then
+  -- code that sets its color and icon, and EPUB callouts carry their styles.
+  -- Other formats use Quarto's styling for unknown callout types.
+  if quarto.doc.is_format("epub") then
+    for _, type in ipairs(calloutTypes) do
+      epubStyles[type] = epubCalloutStyles(customCallouts[type])
+    end
+  elseif quarto.doc.is_format("html") then
     local customCSS = generateCustomCSS(quarto.doc.is_format("revealjs"))
     if customCSS ~= "" then
       quarto.doc.include_text('in-header', '<style>\n' .. customCSS .. '</style>')
@@ -519,6 +589,14 @@ local function convertToCustomCallout(div)
         collapse = div.attributes.collapse or callout.collapse,
         attr = attr
       }
+
+      -- EPUB styles go in attributes, which Quarto moves to a Div around the callout
+      local styles = epubStyles[callout.type]
+      if styles then
+        for _, field in ipairs(EPUB_ATTRIBUTES) do
+          attr.attributes[field[2]] = styles[field[1]]
+        end
+      end
 
       -- GitHub Markdown shows an alert type it doesn't know as plain text, so
       -- other types become a note, which keeps the callout's title
