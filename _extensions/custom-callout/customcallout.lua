@@ -316,6 +316,86 @@ local function latexWrapper(callout)
   return { format = "latex", open = "\\begingroup\n" .. table.concat(lines, "\n"), close = "\\endgroup" }
 end
 
+-- Typst output. Quarto draws each callout with the `callout` function from
+-- its Typst template (share/formats/typst/pandoc/quarto/definitions.typ):
+--   callout(body: [], title: "Callout", background_color: rgb("#dddddd"),
+--     icon: none, icon_color: black, body_background_color: white)
+-- Unknown types get a gray background and fa-info() from the fontawesome
+-- package Quarto imports, which has Font Awesome 6. A custom callout goes in
+-- a content block that shadows `callout` with a function that passes on its
+-- colors and icon, so other callouts keep their own.
+
+---Quotes a string for Typst code
+---@param str string The string
+---@return string quoted The Typst string literal
+local function typstString(str)
+  return '"' .. str:gsub('[\\"]', '\\%0') .. '"'
+end
+
+---Generates the Typst expression for a callout's icon. A FontAwesome icon
+---tries each of its names, as Font Awesome 6 may know it under another
+---one, and falls back to the default icon. `quarto-icon` is Quarto's icon
+---@param callout CustomCallout.Definition The callout definition
+---@return string|nil typst The icon expression, or nil to keep Quarto's icon
+local function typstIcon(callout)
+  -- The default icon, as in HTML: a warning triangle for a colored callout
+  local default = callout.color and 'fa-icon("triangle-exclamation", solid: true)' or "quarto-icon"
+  local symbol = callout.icon_symbol
+
+  if isFontAwesomeIcon(symbol) then
+    ---@cast symbol string
+    -- Brand icons are in the regular-weight brands font, the others in the solid font
+    local solid = fa.fa_is_brand(symbol) and "" or ", solid: true"
+    local typst = ""
+    for _, class in ipairs(fa.fa_aliases(symbol)) do
+      local name = typstString(class:sub(4))
+      typst = typst .. "if " .. name .. " in fa-icon-map { fa-icon(" .. name .. solid .. ") } else "
+    end
+    return typst .. "{ " .. default .. " }"
+  elseif symbol then
+    return typstString(symbol)
+  elseif callout.color then
+    return default
+  end
+  return nil
+end
+
+---Generates the Typst wrapper that gives a callout its color and icon
+---@param callout CustomCallout.Definition The callout definition
+---@return CustomCallout.Wrapper|nil wrapper The wrapper, or nil if Quarto's styling is kept
+local function typstWrapper(callout)
+  ---@type string[]
+  local args = {}
+
+  if callout.color then
+    local hex = colorHex(callout.color)
+    if hex then
+      -- The title background is the color at 13%, as in HTML
+      args[#args + 1] = string.format('background_color: rgb("#%s").lighten(87%%)', hex)
+      args[#args + 1] = string.format('icon_color: rgb("#%s")', hex)
+    else
+      warnUnsupported("Typst", "color", callout.color, callout, "the default color")
+    end
+  end
+
+  -- Quarto passes icon: none for icon: false
+  local icon = typstIcon(callout)
+  if icon then
+    args[#args + 1] = 'icon: { let quarto-icon = quarto-args.named().at("icon", default: none); '
+      .. 'if quarto-icon == none { none } else { ' .. icon .. ' } }'
+  end
+
+  if #args == 0 then
+    return nil
+  end
+  return {
+    format = "typst",
+    open = "#[\n#let custom-callout-quarto = callout\n"
+      .. "#let callout(..quarto-args) = custom-callout-quarto(..quarto-args, " .. table.concat(args, ", ") .. ")",
+    close = "]"
+  }
+end
+
 ---Reads one custom callout definition from its metadata
 ---@param key string The callout type (its key under `custom-callout`)
 ---@param options table The callout's metadata map
@@ -359,9 +439,9 @@ local function parseCustomCallouts(meta)
   end
   table.sort(calloutTypes)
 
-  -- HTML and RevealJS get a stylesheet. PDF wraps each callout in code that
-  -- sets its color and icon. Other formats use Quarto's styling for unknown
-  -- callout types.
+  -- HTML and RevealJS get a stylesheet. PDF and Typst wrap each callout in
+  -- code that sets its color and icon. Other formats use Quarto's styling for
+  -- unknown callout types.
   if quarto.doc.is_format("html") then
     local customCSS = generateCustomCSS(quarto.doc.is_format("revealjs"))
     if customCSS ~= "" then
@@ -373,6 +453,10 @@ local function parseCustomCallouts(meta)
   elseif quarto.doc.is_format("latex") then
     for _, type in ipairs(calloutTypes) do
       calloutWrappers[type] = latexWrapper(customCallouts[type])
+    end
+  elseif quarto.doc.is_format("typst") then
+    for _, type in ipairs(calloutTypes) do
+      calloutWrappers[type] = typstWrapper(customCallouts[type])
     end
   end
 end
