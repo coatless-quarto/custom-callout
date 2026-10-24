@@ -17,6 +17,7 @@ format:
 ## Features
 
 - Added RevealJS presentation support. Custom colors, emoji icons, FontAwesome icons, and appearance styles now work in `format: revealjs`. ([#15](https://github.com/coatless-quarto/custom-callout/issues/15))
+- Custom callouts keep their color and icon in PDF, Typst and EPUB output, and become note alerts in GitHub Markdown. A new docs page shows each format.
 - Allow `title` to be specified as a markdown header in the callout's content.
 
 ````md
