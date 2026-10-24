@@ -2603,7 +2603,29 @@ local function fa_is_brand(icon_name)
   return fa_brand_icons[icon_name] ~= nil
 end
 
+---Lists the names of a FontAwesome icon: the given name first, then the other
+---names for the same icon in the same font (older or newer names), sorted
+---@param icon_name string The icon class, such as "fa-house"
+---@return string[] names The icon classes, or an empty list if the icon is unknown
+local function fa_aliases(icon_name)
+  local icons = fa_brand_icons[icon_name] and fa_brand_icons or fa_icons
+  local unicode = icons[icon_name]
+  if unicode == nil then
+    return {}
+  end
+  local others = {}
+  for name, code in pairs(icons) do
+    if code == unicode and name ~= icon_name then
+      others[#others + 1] = name
+    end
+  end
+  table.sort(others)
+  table.insert(others, 1, icon_name)
+  return others
+end
+
 return {
   fa_unicode = fa_unicode,
-  fa_is_brand = fa_is_brand
+  fa_is_brand = fa_is_brand,
+  fa_aliases = fa_aliases
 }
