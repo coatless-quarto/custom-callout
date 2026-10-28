@@ -30,6 +30,8 @@ website:
       - section: "Extra"
         contents:
         - qcustom-callout-release-notes.qmd
+        - href: https://blog.thecoatlessprofessor.com/projects/custom-callout/
+          text: "Blog posts"
         - text: "Development Notes"
           href: qcustom-callout-dev-notes.qmd
 
