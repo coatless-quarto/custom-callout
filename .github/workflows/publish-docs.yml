@@ -20,7 +20,7 @@ jobs:
         steps:
         
         - name: "Check out repository"
-          uses: actions/checkout@v4
+          uses: actions/checkout@v7
 
         - name: "Set up Quarto"
           uses: quarto-dev/quarto-actions/setup@v2
@@ -38,7 +38,7 @@ jobs:
         # Make sure to set a retention day to avoid running into a cap
         # This artifact shouldn't be required after deployment onto pages was a success.
         - name: Upload Pages artifact
-          uses: actions/upload-pages-artifact@v3
+          uses: actions/upload-pages-artifact@v5
           with: 
             retention-days: 1
             path: 'docs/_site'
@@ -49,4 +49,4 @@ jobs:
         # instead of using `docs/` or the `gh-pages` branch of the repository
         - name: Deploy to GitHub Pages
           id: deployment
-          uses: actions/deploy-pages@v4
+          uses: actions/deploy-pages@v5
