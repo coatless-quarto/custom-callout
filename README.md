@@ -132,6 +132,13 @@ grouped callouts, you can use the `groups` option in the
 `{quarto-custom-numbered-blocks}` extension to formulate joint counters and styles.
 It's a great extension to use if you need more than just custom callouts.
 
+## Learn more
+
+- [Documentation](https://quarto.thecoatlessprofessor.com/custom-callout/)
+- [Release notes](https://quarto.thecoatlessprofessor.com/custom-callout/qcustom-callout-release-notes.html)
+- [Blog posts](https://blog.thecoatlessprofessor.com/projects/custom-callout/)
+- Discuss on [Mastodon](https://mastodon.social/@coatless/113344381273941753), [Bluesky](https://bsky.app/profile/coatless.bsky.social/post/3l6z2loyld52m) or [X](https://x.com/axiomsofxyz/status/1848274874956935442)
+
 ## License
 
 custom-callout is licensed under AGPL-3.0-or-later with an exception: what you write and render with custom-callout stays yours, along with the output, under any terms you like. See [LICENSE](LICENSE) and [LICENSE-EXCEPTION.md](LICENSE-EXCEPTION.md).
