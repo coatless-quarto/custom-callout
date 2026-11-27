@@ -1,0 +1,54 @@
+---
+title: "custom-callout: every option"
+filters:
+  - custom-callout
+custom-callout:
+  todo:
+    color: "#F00"
+  idea:
+    icon-symbol: "💡"
+  star:
+    color: "#FFD700"
+    icon-symbol: "fa-star"
+  repo:
+    color: "navy"
+    icon-symbol: "fa-github"
+  quiet:
+    color: "#336699"
+    icon: false
+    appearance: simple
+    title: "Quiet one"
+    collapse: true
+---
+
+::: todo
+Todo body.
+:::
+
+::: idea
+Idea body.
+:::
+
+::: star
+Star body.
+:::
+
+::: repo
+Repo body.
+:::
+
+::: quiet
+Quiet body.
+:::
+
+::: {.todo #my-todo .extra data-x="1" title="Attribute title" appearance="minimal"}
+## Kept heading
+
+Body with an attribute title.
+:::
+
+::: todo
+## Heading title
+
+Body with a heading title.
+:::
